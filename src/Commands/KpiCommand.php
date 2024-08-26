@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Elegantly\Kpi\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class KpiCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-kpi';
 
     public $description = 'My command';
 
