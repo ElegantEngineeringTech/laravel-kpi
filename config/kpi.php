@@ -1,4 +1,11 @@
 <?php
 
 // config for Elegantly/Kpi
-return [];
+return [
+
+    'discover_kpi_definitions' => true,
+
+    'definitions_path' => 'kpis',
+
+    'definitions' => [],
+];

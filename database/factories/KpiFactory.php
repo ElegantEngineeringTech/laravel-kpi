@@ -2,18 +2,18 @@
 
 namespace Elegantly\Kpi\Database\Factories;
 
+use Elegantly\Kpi\Models\Kpi;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/*
-class ModelFactory extends Factory
+/**
+ * @extends Factory<Kpi>
+ */
+class KpiFactory extends Factory
 {
-    protected $model = YourModel::class;
+    protected $model = Kpi::class;
 
     public function definition()
     {
-        return [
-
-        ];
+        return [];
     }
 }
-*/

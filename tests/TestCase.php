@@ -3,6 +3,7 @@
 namespace Elegantly\Kpi\Tests;
 
 use Elegantly\Kpi\KpiServiceProvider;
+use Elegantly\Money\MoneyServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -21,6 +22,7 @@ class TestCase extends Orchestra
     {
         return [
             KpiServiceProvider::class,
+            MoneyServiceProvider::class,
         ];
     }
 
@@ -28,9 +30,7 @@ class TestCase extends Orchestra
     {
         config()->set('database.default', 'testing');
 
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_laravel-kpi_table.php.stub';
+        $migration = include __DIR__.'/../database/migrations/create_kpis_table.php.stub';
         $migration->up();
-        */
     }
 }

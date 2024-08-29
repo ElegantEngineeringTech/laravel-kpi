@@ -2,7 +2,7 @@
 
 namespace Elegantly\Kpi;
 
-use Elegantly\Kpi\Commands\KpiCommand;
+use Elegantly\Kpi\Commands\SnapshotKpiCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -18,8 +18,7 @@ class KpiServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-kpi')
             ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_laravel_kpi_table')
-            ->hasCommand(KpiCommand::class);
+            ->hasMigration('create_kpis_table')
+            ->hasCommand(SnapshotKpiCommand::class);
     }
 }
