@@ -24,6 +24,7 @@ it('can seed kpis between the right dates', function (KpiInterval $interval) {
         (int) round($from->diffInUnit($interval->toSmallerUnit(), $to))
     );
 })->with([
+    [KpiInterval::Minute],
     [KpiInterval::Hour],
     [KpiInterval::Day],
     [KpiInterval::Month],
@@ -61,6 +62,7 @@ it('can query 1 kpi per interval', function (KpiInterval $interval) {
     // );
 
 })->with([
+    [KpiInterval::Minute],
     [KpiInterval::Hour],
     [KpiInterval::Day],
     [KpiInterval::Month],
@@ -92,6 +94,7 @@ it('can query the sum of all kpis per interval', function (KpiInterval $interval
         $sum->toArray()
     );
 })->with([
+    [KpiInterval::Minute],
     [KpiInterval::Hour],
     [KpiInterval::Day],
     [KpiInterval::Month],

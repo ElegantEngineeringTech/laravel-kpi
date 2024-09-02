@@ -191,9 +191,11 @@ class Kpi extends Model
      */
     public function scopeLatestPerInterval(Builder $query, KpiInterval $interval): Builder
     {
+        $grammar = $query->getQuery()->getGrammar();
+
         return $query->join(
             DB::raw(
-                "(SELECT MAX(date) AS max_date FROM kpis GROUP BY {$interval->toSqlFormat('date')}) as subquery"
+                "(SELECT MAX(date) AS max_date FROM kpis GROUP BY {$interval->toSqlFormat($grammar::class, 'date')}) as subquery"
             ),
             'kpis.date',
             '=',

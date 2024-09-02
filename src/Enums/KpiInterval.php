@@ -4,9 +4,17 @@ namespace Elegantly\Kpi\Enums;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use Elegantly\Kpi\SqlAdapters\MySqlAdapter;
+use Elegantly\Kpi\SqlAdapters\PostgreSqlAdapter;
+use Elegantly\Kpi\SqlAdapters\SqliteAdapter;
+use Error;
+use Illuminate\Database\Query\Grammars\MySqlGrammar;
+use Illuminate\Database\Query\Grammars\PostgresGrammar;
+use Illuminate\Database\Query\Grammars\SQLiteGrammar;
 
 enum KpiInterval: string
 {
+    case Minute = 'minute';
     case Hour = 'hour';
     case Day = 'day';
     case Month = 'month';
@@ -20,7 +28,8 @@ enum KpiInterval: string
     public function toSmallerUnit(): string
     {
         return match ($this) {
-            self::Hour => 'minute',
+            self::Minute => 'second',
+            self::Hour => self::Minute->toUnit(),
             self::Day => self::Hour->toUnit(),
             self::Month => self::Day->toUnit(),
             self::Year => self::Month->toUnit(),
@@ -30,7 +39,8 @@ enum KpiInterval: string
     public function toDateFormat(): string
     {
         return match ($this) {
-            self::Hour => 'Y-m-d H',
+            self::Minute => 'Y-m-d H:i:00',
+            self::Hour => 'Y-m-d H:00',
             self::Day => 'Y-m-d',
             self::Month => 'Y-m',
             self::Year => 'Y',
@@ -42,13 +52,13 @@ enum KpiInterval: string
         return Carbon::createFromFormat($this->toDateFormat(), $date);
     }
 
-    public function toSqlFormat(string $column): string
+    public function toSqlFormat(string $driver, string $column): string
     {
-        return match ($this) {
-            self::Hour => "strftime('%Y-%m-%d %H', {$column})",
-            self::Day => "strftime('%Y-%m-%d', {$column})",
-            self::Month => "strftime('%Y-%m', {$column})",
-            self::Year => "strftime('%Y', {$column})",
+        return match ($driver) {
+            MySqlGrammar::class, 'mysql', 'mariadb' => MySqlAdapter::datetime($this, $column),
+            SQLiteGrammar::class, 'sqlite' => SqliteAdapter::datetime($this, $column),
+            PostgresGrammar::class, 'pgsql' => PostgreSqlAdapter::datetime($this, $column),
+            default => throw new Error('Unsupported database driver.'),
         };
     }
 
@@ -56,24 +66,14 @@ enum KpiInterval: string
     {
         $date ??= now();
 
-        return match ($this) {
-            self::Hour => $date->startOfHour(),
-            self::Day => $date->startOfDay(),
-            self::Month => $date->startOfMonth(),
-            self::Year => $date->startOfYear(),
-        };
+        return $date->startOf($this->toUnit());
     }
 
     public function toEndOf(?Carbon $date = null): Carbon
     {
         $date ??= now();
 
-        return match ($this) {
-            self::Hour => $date->endOfHour(),
-            self::Day => $date->endOfDay(),
-            self::Month => $date->endOfMonth(),
-            self::Year => $date->endOfYear(),
-        };
+        return $date->endOf($this->toUnit());
     }
 
     public function toPerdiod(

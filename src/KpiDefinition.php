@@ -131,12 +131,14 @@ abstract class KpiDefinition
 
         if ($interval) {
 
+            $grammar = $query->getQuery()->getGrammar();
+
             /**
              * @var SupportCollection<int, object{ date_group: string, aggregated_value: float|int }> $results
              */
             $results = $query
                 ->toBase()
-                ->selectRaw("{$interval->toSqlFormat('date')} as date_group")
+                ->selectRaw("{$interval->toSqlFormat($grammar::class, 'date')} as date_group")
                 ->groupBy('date_group')
                 ->addSelect($aggregate->toSqlSelect('number_value', 'aggregated_value'))
                 ->orderBy('date_group')
