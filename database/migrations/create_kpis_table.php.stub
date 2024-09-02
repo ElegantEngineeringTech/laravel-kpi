@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('kpis', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name')->index();
+            $table->string('name');
 
             $table->string('type');
 
@@ -27,6 +27,10 @@ return new class extends Migration
             $table->text('description')->nullable(); // store any comment
             $table->json('metadata')->nullable();
             $table->json('tags')->nullable();
+
+            $table->datetime('date');
+
+            $table->index(['name', 'date']);
 
             $table->timestamps();
         });

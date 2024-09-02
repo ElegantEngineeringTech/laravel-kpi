@@ -12,7 +12,7 @@ class TestKpiDefinition extends KpiDefinition
         return 'test';
     }
 
-    public static function getInterval(): KpiInterval
+    public static function getSnapshotInterval(): KpiInterval
     {
         return KpiInterval::Hour;
     }

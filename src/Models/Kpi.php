@@ -5,14 +5,17 @@ namespace Elegantly\Kpi\Models;
 use Brick\Money\Money;
 use Carbon\Carbon;
 use Elegantly\Kpi\Database\Factories\KpiFactory;
+use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Money\MoneyCast;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\ArrayObject;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property string $name
@@ -27,6 +30,7 @@ use Illuminate\Support\Arr;
  * @property ?string $description
  * @property null|array<int, int|string> $tags
  * @property ?ArrayObject<int|string, mixed> $metadata
+ * @property Carbon $date
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
@@ -45,6 +49,7 @@ class Kpi extends Model
         'money_value' => MoneyCast::class.':money_currency',
         'metadata' => AsArrayObject::class,
         'tags' => 'array',
+        'date' => 'datetime',
     ];
 
     /**
@@ -136,6 +141,20 @@ class Kpi extends Model
         return $this;
     }
 
+    public function setDescription(?string $value): static
+    {
+        $this->description = $value;
+
+        return $this;
+    }
+
+    public function setDate(Carbon $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
     /**
      * @param  null|array<int|string, mixed>|ArrayObject<int|string, mixed>  $value
      */
@@ -146,13 +165,6 @@ class Kpi extends Model
         } else {
             $this->metadata = $value;
         }
-
-        return $this;
-    }
-
-    public function setDescription(?string $value): static
-    {
-        $this->description = $value;
 
         return $this;
     }
@@ -171,5 +183,21 @@ class Kpi extends Model
         }
 
         return $this;
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     * @return Builder<self>
+     */
+    public function scopeLatestPerInterval(Builder $query, KpiInterval $interval): Builder
+    {
+        return $query->join(
+            DB::raw(
+                "(SELECT MAX(date) AS max_date FROM kpis GROUP BY {$interval->toSqlFormat('date')}) as subquery"
+            ),
+            'kpis.date',
+            '=',
+            'subquery.max_date'
+        );
     }
 }
