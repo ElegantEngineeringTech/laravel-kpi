@@ -35,7 +35,7 @@ class KpisSnapshotCommand extends Command
             'Snapshotting...',
             $definitions,
             function (string $class) use ($date) {
-                $class::create($date);
+                $class::snapshot($date);
             }
         );
 

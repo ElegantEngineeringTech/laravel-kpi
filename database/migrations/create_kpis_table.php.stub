@@ -12,10 +12,11 @@ return new class extends Migration
             $table->id();
 
             $table->string('name');
+            $table->datetime('date');
 
             $table->string('type');
 
-            $table->decimal('number_value', 12, 2)->nullable();
+            $table->decimal('number_value', 14, 4)->nullable();
 
             $table->string('string_value')->nullable();
 
@@ -27,8 +28,6 @@ return new class extends Migration
             $table->text('description')->nullable(); // store any comment
             $table->json('metadata')->nullable();
             $table->json('tags')->nullable();
-
-            $table->datetime('date');
 
             $table->index(['name', 'date']);
 

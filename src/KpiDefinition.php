@@ -233,7 +233,7 @@ abstract class KpiDefinition
             );
     }
 
-    public static function create(Carbon $date): Kpi
+    public static function snapshot(Carbon $date): Kpi
     {
         $definition = new static($date);
 
@@ -279,7 +279,7 @@ abstract class KpiDefinition
          * @var Carbon $date
          */
         foreach ($period as $date) {
-            $kpis->push(static::create($date));
+            $kpis->push(static::snapshot($date));
         }
 
         return $kpis;
