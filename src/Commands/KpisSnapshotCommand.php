@@ -52,7 +52,12 @@ class KpisSnapshotCommand extends Command
          */
         $definitions = new Collection;
 
-        $discovered = Discover::in(app_path('kpis.discover.path'))
+        /**
+         * @var string $path
+         */
+        $path = config('kpi.discover.path');
+
+        $discovered = Discover::in(app_path($path))
             ->classes()
             ->extending(KpiDefinition::class)
             ->get();
