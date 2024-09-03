@@ -37,6 +37,9 @@ enum KpiInterval: string
         };
     }
 
+    /**
+     * This format must exacelty match the SQL format from SqlAdapters
+     */
     public function toDateFormat(): string
     {
         return match ($this) {
@@ -87,7 +90,7 @@ enum KpiInterval: string
         return CarbonPeriod::between(
             start: $this->toStartOf($start->clone()),
             end: $this->toEndOf($end->clone())
-        )->interval("1 {$this->value}");
+        )->interval($this->toCarbonInterval());
     }
 
     public function toCarbonInterval(): CarbonInterval

@@ -17,9 +17,9 @@ class TestKpiDefinition extends KpiDefinition
         return KpiInterval::Hour;
     }
 
-    public function getValue(): ?int
+    public function getValue(): ?float
     {
-        return 10;
+        return rand(100, 200) / 10;
     }
 
     public function getTags(): ?array

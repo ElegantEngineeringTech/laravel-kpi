@@ -40,13 +40,13 @@ it('can query the sum of all kpis per interval', function (KpiInterval $interval
     $kpis = TestKpiDefinition::query()
         ->get()
         ->groupBy(fn (Kpi $kpi) => $kpi->date->format($interval->toDateFormat()))
-        ->map(fn ($kpis) => $kpis->sum(fn (Kpi $kpi) => $kpi->number_value));
+        ->map(fn ($kpis) => round($kpis->sum(fn (Kpi $kpi) => $kpi->number_value), 2));
 
     $sum = TestKpiDefinition::sum(
         interval: $interval
     )
         ->keyBy(fn (KpiAggregatedValue $value) => $value->date->format($interval->toDateFormat()))
-        ->map(fn (KpiAggregatedValue $value) => (float) $value->value);
+        ->map(fn (KpiAggregatedValue $value) => (float) round($value->value, 2));
 
     expect(
         $kpis->toArray()
@@ -72,9 +72,41 @@ it('can query the avg of all kpis per interval', function (KpiInterval $interval
     $kpis = TestKpiDefinition::query()
         ->get()
         ->groupBy(fn (Kpi $kpi) => $kpi->date->format($interval->toDateFormat()))
-        ->map(fn ($kpis) => $kpis->average(fn (Kpi $kpi) => $kpi->number_value));
+        ->map(fn ($kpis) => round($kpis->average(fn (Kpi $kpi) => $kpi->number_value), 2));
 
     $avg = TestKpiDefinition::avg(
+        interval: $interval
+    )
+        ->keyBy(fn (KpiAggregatedValue $value) => $value->date->format($interval->toDateFormat()))
+        ->map(fn (KpiAggregatedValue $value) => (float) round($value->value, 2));
+
+    expect(
+        $kpis->toArray()
+    )->toBe(
+        $avg->toArray()
+    );
+})->with([
+    [KpiInterval::Minute],
+    [KpiInterval::Hour],
+    [KpiInterval::Day],
+    [KpiInterval::Month],
+    [KpiInterval::Year],
+]);
+
+it('can query the max of all kpis per interval', function (KpiInterval $interval) {
+
+    $seeded = TestKpiDefinition::seed(
+        from: $interval->toStartOf()->sub($interval->value, 9),
+        to: $interval->toEndOf(),
+        interval: "1 {$interval->toSmallerUnit()}"
+    );
+
+    $kpis = TestKpiDefinition::query()
+        ->get()
+        ->groupBy(fn (Kpi $kpi) => $kpi->date->format($interval->toDateFormat()))
+        ->map(fn ($kpis) => $kpis->max(fn (Kpi $kpi) => $kpi->number_value));
+
+    $max = TestKpiDefinition::max(
         interval: $interval
     )
         ->keyBy(fn (KpiAggregatedValue $value) => $value->date->format($interval->toDateFormat()))
@@ -83,7 +115,39 @@ it('can query the avg of all kpis per interval', function (KpiInterval $interval
     expect(
         $kpis->toArray()
     )->toBe(
-        $avg->toArray()
+        $max->toArray()
+    );
+})->with([
+    [KpiInterval::Minute],
+    [KpiInterval::Hour],
+    [KpiInterval::Day],
+    [KpiInterval::Month],
+    [KpiInterval::Year],
+]);
+
+it('can query the min of all kpis per interval', function (KpiInterval $interval) {
+
+    $seeded = TestKpiDefinition::seed(
+        from: $interval->toStartOf()->sub($interval->value, 9),
+        to: $interval->toEndOf(),
+        interval: "1 {$interval->toSmallerUnit()}"
+    );
+
+    $kpis = TestKpiDefinition::query()
+        ->get()
+        ->groupBy(fn (Kpi $kpi) => $kpi->date->format($interval->toDateFormat()))
+        ->map(fn ($kpis) => $kpis->min(fn (Kpi $kpi) => $kpi->number_value));
+
+    $min = TestKpiDefinition::min(
+        interval: $interval
+    )
+        ->keyBy(fn (KpiAggregatedValue $value) => $value->date->format($interval->toDateFormat()))
+        ->map(fn (KpiAggregatedValue $value) => (float) $value->value);
+
+    expect(
+        $kpis->toArray()
+    )->toBe(
+        $min->toArray()
     );
 })->with([
     [KpiInterval::Minute],

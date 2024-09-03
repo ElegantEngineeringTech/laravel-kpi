@@ -90,6 +90,46 @@ abstract class KpiDefinition
      * @param  T  $interval
      * @return (T is null ? int|float : SupportCollection<int, KpiAggregatedValue<int|float>>)
      */
+    public static function max(
+        ?Builder $query = null,
+        string $column = 'number_value',
+        ?KpiInterval $interval = null,
+    ): int|float|SupportCollection {
+        return static::aggregate(
+            aggregate: KpiAggregate::Max,
+            query: $query,
+            column: $column,
+            interval: $interval
+        );
+    }
+
+    /**
+     * @template T of null|KpiInterval
+     *
+     * @param  Builder<Kpi>  $query
+     * @param  T  $interval
+     * @return (T is null ? int|float : SupportCollection<int, KpiAggregatedValue<int|float>>)
+     */
+    public static function min(
+        ?Builder $query = null,
+        string $column = 'number_value',
+        ?KpiInterval $interval = null,
+    ): int|float|SupportCollection {
+        return static::aggregate(
+            aggregate: KpiAggregate::Min,
+            query: $query,
+            column: $column,
+            interval: $interval
+        );
+    }
+
+    /**
+     * @template T of null|KpiInterval
+     *
+     * @param  Builder<Kpi>  $query
+     * @param  T  $interval
+     * @return (T is null ? int|float : SupportCollection<int, KpiAggregatedValue<int|float>>)
+     */
     public static function sum(
         ?Builder $query = null,
         string $column = 'number_value',
