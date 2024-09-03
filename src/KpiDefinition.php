@@ -66,15 +66,17 @@ abstract class KpiDefinition
      *
      * @param  Builder<Kpi>  $query
      * @param  T  $interval
-     * @return (T is null ? float : SupportCollection<int, KpiAggregatedValue>)
+     * @return (T is null ? int|float : SupportCollection<int, KpiAggregatedValue<int|float>>)
      */
     public static function sum(
         ?Builder $query = null,
+        string $column = 'number_value',
         ?KpiInterval $interval = null,
-    ): float|SupportCollection {
+    ): int|float|SupportCollection {
         return static::aggregate(
             aggregate: KpiAggregate::Sum,
             query: $query,
+            column: $column,
             interval: $interval
         );
     }
@@ -84,15 +86,17 @@ abstract class KpiDefinition
      *
      * @param  Builder<Kpi>  $query
      * @param  T  $interval
-     * @return (T is null ? float : SupportCollection<int, KpiAggregatedValue>)
+     * @return (T is null ? int|float : SupportCollection<int, KpiAggregatedValue<int|float>>)
      */
     public static function avg(
         ?Builder $query = null,
+        string $column = 'number_value',
         ?KpiInterval $interval = null,
-    ): float|SupportCollection {
+    ): int|float|SupportCollection {
         return static::aggregate(
             aggregate: KpiAggregate::Average,
             query: $query,
+            column: $column,
             interval: $interval
         );
     }
@@ -102,15 +106,20 @@ abstract class KpiDefinition
      *
      * @param  Builder<Kpi>  $query
      * @param  T  $interval
-     * @return (T is null ? float : SupportCollection<int, KpiAggregatedValue>)
+     * @return (T is null ? int : SupportCollection<int, KpiAggregatedValue<int>>)
      */
     public static function count(
         ?Builder $query = null,
+        string $column = 'number_value',
         ?KpiInterval $interval = null,
-    ): float|SupportCollection {
+    ): int|SupportCollection {
+        /**
+         * @var int|SupportCollection<int, KpiAggregatedValue<int>>
+         */
         return static::aggregate(
             aggregate: KpiAggregate::Count,
             query: $query,
+            column: $column,
             interval: $interval
         );
     }
@@ -120,13 +129,14 @@ abstract class KpiDefinition
      *
      * @param  Builder<Kpi>  $query
      * @param  T  $interval
-     * @return (T is null ? float : SupportCollection<int, KpiAggregatedValue>)
+     * @return (T is null ? int|float : SupportCollection<int, KpiAggregatedValue<int|float>>)
      */
     public static function aggregate(
         KpiAggregate $aggregate,
         ?Builder $query = null,
+        string $column = 'number_value',
         ?KpiInterval $interval = null,
-    ): float|SupportCollection {
+    ): int|float|SupportCollection {
         $query ??= static::query();
 
         if ($interval) {
@@ -134,13 +144,13 @@ abstract class KpiDefinition
             $grammar = $query->getQuery()->getGrammar();
 
             /**
-             * @var SupportCollection<int, object{ date_group: string, aggregated_value: float|int }> $results
+             * @var SupportCollection<int, object{ date_group: string, aggregated_value: int|float }> $results
              */
             $results = $query
                 ->toBase()
                 ->selectRaw("{$interval->toSqlFormat($grammar::class, 'date')} as date_group")
                 ->groupBy('date_group')
-                ->addSelect($aggregate->toSqlSelect('number_value', 'aggregated_value'))
+                ->addSelect($aggregate->toSqlSelect($column, 'aggregated_value'))
                 ->orderBy('date_group')
                 ->get();
 
@@ -157,7 +167,7 @@ abstract class KpiDefinition
             ->toBase()
             ->aggregate(
                 function: $aggregate->toBuilderFunction(),
-                columns: ['number_value']
+                columns: [$column]
             );
     }
 

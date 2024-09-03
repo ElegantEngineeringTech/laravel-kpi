@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\DB;
 
 enum KpiAggregate: string
 {
+    case Max = 'max';
+    case Min = 'min';
     case Sum = 'sum';
     case Average = 'average';
     case Count = 'count';
@@ -13,7 +15,9 @@ enum KpiAggregate: string
     public function toSqlSelect(string $column, string $alias = 'aggregated_value'): \Illuminate\Contracts\Database\Query\Expression
     {
         return match ($this) {
-            self::Count => DB::raw("COUNTM({$column}) as {$alias}"),
+            self::Max => DB::raw("MAX({$column}) as {$alias}"),
+            self::Min => DB::raw("MIN({$column}) as {$alias}"),
+            self::Count => DB::raw("COUNT({$column}) as {$alias}"),
             self::Sum => DB::raw("SUM({$column}) as {$alias}"),
             self::Average => DB::raw("AVG({$column}) as {$alias}"),
         };
@@ -22,6 +26,8 @@ enum KpiAggregate: string
     public function toBuilderFunction(): string
     {
         return match ($this) {
+            self::Max => 'max',
+            self::Min => 'min',
             self::Count => 'count',
             self::Sum => 'sum',
             self::Average => 'avg',

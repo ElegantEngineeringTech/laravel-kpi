@@ -7,13 +7,18 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 
 /**
- * @implements Arrayable<string, mixed>
+ * @template TValue
+ *
+ * @implements Arrayable<string, TValue>
  */
 class KpiAggregatedValue implements Arrayable, Jsonable
 {
+    /**
+     * @param  TValue  $value
+     */
     public function __construct(
         public Carbon $date,
-        public int|float|null $value,
+        public mixed $value,
     ) {
         //
     }
