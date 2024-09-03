@@ -5,8 +5,8 @@ namespace Elegantly\Kpi\Commands;
 use Carbon\Carbon;
 use Elegantly\Kpi\KpiDefinition;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Spatie\StructureDiscoverer\Data\DiscoveredClass;
-use Spatie\StructureDiscoverer\Data\DiscoveredStructure;
 use Spatie\StructureDiscoverer\Discover;
 
 use function Laravel\Prompts\progress;
@@ -26,7 +26,9 @@ class SnapshotKpiCommand extends Command
         $definitions = $this->getDefinitions();
 
         if ($interval) {
-            $definitions = array_filter($definitions, fn (string $className) => $className::getSnapshotInterval()->value === $interval);
+            $definitions = $definitions->filter(function (string $className) use ($interval) {
+                return $className::getSnapshotInterval()->value === $interval;
+            });
         }
 
         progress(
@@ -41,40 +43,49 @@ class SnapshotKpiCommand extends Command
     }
 
     /**
-     * @return class-string<KpiDefinition>[]
+     * @return Collection<int, class-string<KpiDefinition>>
      */
-    public function getDiscoveredDefinitions(): array
+    public function getDiscoveredDefinitions(): Collection
     {
         /**
-         * @var class-string<KpiDefinition>[]
+         * @var Collection<int, class-string<KpiDefinition>>
          */
-        return collect(
-            Discover::in(app_path('kpis.discover_kpi_definitions'))
-                ->classes()
-                ->extending(KpiDefinition::class)
-                ->get()
-        )
-            ->flatMap(function (DiscoveredStructure|string $structure) {
-                if ($structure instanceof DiscoveredClass) {
-                    return [$structure->name];
-                }
+        $definitions = new Collection;
 
-                return [];
-            })->toArray();
+        $discovered = Discover::in(app_path('kpis.discover.path'))
+            ->classes()
+            ->extending(KpiDefinition::class)
+            ->get();
+
+        foreach ($discovered as $item) {
+            if ($item instanceof DiscoveredClass) {
+                /**
+                 * @var class-string<KpiDefinition> $className
+                 */
+                $className = "{$item->namespace}\{$item->name}";
+                $definitions->push($className);
+            }
+        }
+
+        return $definitions;
     }
 
     /**
-     * @return class-string<KpiDefinition>[]
+     * @return Collection<int, class-string<KpiDefinition>>
      */
-    public function getDefinitions(): array
+    public function getDefinitions(): Collection
     {
-        if (config('kpi.discover_kpi_definitions')) {
-            return $this->getDiscoveredDefinitions();
+        /**
+         * @var class-string<KpiDefinition>[] $registered
+         */
+        $registered = config('kpi.definitions') ?? [];
+
+        if (config('kpi.discover.enabled')) {
+            return $this->getDiscoveredDefinitions()
+                ->push(...$registered)
+                ->unique();
         }
 
-        /**
-         * @var class-string<KpiDefinition>[]
-         */
-        return config('kpi.definitions') ?? [];
+        return collect($registered);
     }
 }
