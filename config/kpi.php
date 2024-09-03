@@ -17,7 +17,7 @@ return [
         /**
          * This path will be used with `app_path` helper like `app_path('/app/Kpis')`
          */
-        'path' => '/app/Kpis',
+        'path' => 'Kpis',
     ],
 
     /*
