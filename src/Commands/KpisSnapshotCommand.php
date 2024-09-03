@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Elegantly\Kpi\KpiDefinition;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
-use Spatie\StructureDiscoverer\Data\DiscoveredClass;
 use Spatie\StructureDiscoverer\Discover;
 
 use function Laravel\Prompts\progress;
@@ -63,7 +62,12 @@ class KpisSnapshotCommand extends Command
             ->get();
 
         foreach ($discovered as $item) {
-            if ($item instanceof DiscoveredClass) {
+            if (is_string($item)) {
+                /**
+                 * @var class-string<KpiDefinition> $item
+                 */
+                $definitions->push($item);
+            } else {
                 /**
                  * @var class-string<KpiDefinition> $className
                  */
