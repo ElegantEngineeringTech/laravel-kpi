@@ -21,33 +21,19 @@ abstract class KpiDefinition
     }
 
     /**
-     * @return null|string|int|float|ArrayObject<int|string, mixed>
+     * The interval at which the KPI will be captured using the kpi:snapshot command.
      */
-    abstract public function getValue(): null|string|int|float|ArrayObject;
-
-    /**
-     * Tags to store alongside the KPI value
-     *
-     * @return string[]
-     */
-    abstract public function getTags(): ?array;
-
-    /**
-     * Metadata to store alongside the KPI value
-     *
-     * @return null|array<string|int, mixed>
-     */
-    abstract public function getMetadata(): ?array;
-
-    /**
-     * Description to store alongside the KPI value
-     */
-    abstract public function getDescription(): ?string;
+    abstract public static function getSnapshotInterval(): KpiInterval;
 
     /**
      * Unique name like "users:active:count"
      */
     abstract public static function getName(): string;
+
+    /**
+     * @return null|string|int|float|ArrayObject<int|string, mixed>
+     */
+    abstract public function getValue(): null|string|int|float|ArrayObject;
 
     /**
      * Display name like "Active Users"
@@ -59,9 +45,32 @@ abstract class KpiDefinition
     }
 
     /**
-     * The interval at which the KPI will be captured using the kpi:snapshot command.
+     * Tags to store alongside the KPI value
+     *
+     * @return string[]
      */
-    abstract public static function getSnapshotInterval(): KpiInterval;
+    public function getTags(): ?array
+    {
+        return null;
+    }
+
+    /**
+     * Metadata to store alongside the KPI value
+     *
+     * @return null|array<string|int, mixed>
+     */
+    public function getMetadata(): ?array
+    {
+        return null;
+    }
+
+    /**
+     * Description to store alongside the KPI value
+     */
+    public function getDescription(): ?string
+    {
+        return null;
+    }
 
     /**
      * @return Builder<Kpi>
