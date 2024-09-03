@@ -26,19 +26,41 @@ abstract class KpiDefinition
     abstract public function getValue(): null|string|int|float|ArrayObject;
 
     /**
+     * Tags to store alongside the KPI value
+     *
      * @return string[]
      */
     abstract public function getTags(): ?array;
 
     /**
+     * Metadata to store alongside the KPI value
+     *
      * @return null|array<string|int, mixed>
      */
     abstract public function getMetadata(): ?array;
 
+    /**
+     * Description to store alongside the KPI value
+     */
     abstract public function getDescription(): ?string;
 
+    /**
+     * Unique name like "users:active:count"
+     */
     abstract public static function getName(): string;
 
+    /**
+     * Display name like "Active Users"
+     * The default value is the KPI's name
+     */
+    public static function getLabel(): string
+    {
+        return static::getName();
+    }
+
+    /**
+     * The interval at which the KPI will be captured using the kpi:snapshot command.
+     */
     abstract public static function getSnapshotInterval(): KpiInterval;
 
     /**
