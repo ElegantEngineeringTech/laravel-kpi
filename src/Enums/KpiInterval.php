@@ -3,6 +3,7 @@
 namespace Elegantly\Kpi\Enums;
 
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
 use Elegantly\Kpi\SqlAdapters\MySqlAdapter;
 use Elegantly\Kpi\SqlAdapters\PostgreSqlAdapter;
@@ -87,5 +88,10 @@ enum KpiInterval: string
             start: $this->toStartOf($start->clone()),
             end: $this->toEndOf($end->clone())
         )->interval("1 {$this->value}");
+    }
+
+    public function toCarbonInterval(): CarbonInterval
+    {
+        return CarbonInterval::fromString("1 {$this->toUnit()}");
     }
 }

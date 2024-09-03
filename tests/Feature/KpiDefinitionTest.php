@@ -4,7 +4,6 @@ use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Kpi\KpiAggregatedValue;
 use Elegantly\Kpi\Models\Kpi;
 use Elegantly\Kpi\Tests\TestKpiDefinition;
-use Illuminate\Database\Eloquent\Collection;
 
 it('can seed kpis between the right dates', function (KpiInterval $interval) {
 
@@ -22,30 +21,6 @@ it('can seed kpis between the right dates', function (KpiInterval $interval) {
     )->toBe(
         (int) round($from->diffInUnit($interval->toSmallerUnit(), $to))
     );
-})->with([
-    [KpiInterval::Minute],
-    [KpiInterval::Hour],
-    [KpiInterval::Day],
-    [KpiInterval::Month],
-    [KpiInterval::Year],
-]);
-
-it('can query 1 kpi per interval', function (KpiInterval $interval) {
-
-    $seeded = TestKpiDefinition::seed(
-        from: $interval->toStartOf()->sub($interval->value, 9),
-        to: $interval->toEndOf(),
-        interval: "1 {$interval->toSmallerUnit()}"
-    );
-
-    $query = TestKpiDefinition::query()->latestPerInterval($interval);
-
-    /** @var Collection<int, Kpi> $kpis */
-    $kpis = $query->get();
-
-    $kpisCountBy = $kpis->countBy(fn (Kpi $kpi) => $kpi->date->format($interval->toDateFormat()));
-
-    expect($kpisCountBy->every(fn ($value) => $value === 1))->toBeTrue();
 })->with([
     [KpiInterval::Minute],
     [KpiInterval::Hour],

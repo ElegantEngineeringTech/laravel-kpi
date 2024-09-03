@@ -205,7 +205,7 @@ abstract class KpiDefinition
             start: $from->clone(),
             end: $to->clone(),
         )->interval(
-            $interval instanceof KpiInterval ? "1 {$interval->value}" : $interval
+            $interval instanceof KpiInterval ? $interval->toCarbonInterval() : $interval
         );
 
         /**
