@@ -14,8 +14,11 @@ use Illuminate\Support\Collection as SupportCollection;
 
 abstract class KpiDefinition
 {
+    /**
+     * @param  ?Carbon  $date  The date to snapshot
+     */
     final public function __construct(
-        public Carbon $date
+        public ?Carbon $date = null
     ) {
         //
     }
@@ -70,6 +73,60 @@ abstract class KpiDefinition
     public function getDescription(): ?string
     {
         return null;
+    }
+
+    public static function snapshot(?Carbon $date = null): Kpi
+    {
+        $definition = new static($date);
+
+        $kpi = new Kpi;
+
+        $date ??= now();
+
+        $kpi
+            ->setName(static::getName())
+            ->setValue($definition->getValue())
+            ->setDate($date->clone())
+            ->setMetadata($definition->getMetadata())
+            ->setDescription($definition->getDescription())
+            ->setTags($definition->getTags())
+            ->save();
+
+        return $kpi;
+    }
+
+    /**
+     * @return Collection<int, Kpi>
+     */
+    public static function seed(
+        Carbon $from,
+        Carbon $to,
+        KpiInterval|string $interval,
+    ): Collection {
+
+        /**
+         * @var CarbonPeriod $period
+         */
+        $period = CarbonPeriod::between(
+            start: $from->clone(),
+            end: $to->clone(),
+        )->interval(
+            $interval instanceof KpiInterval ? $interval->toCarbonInterval() : $interval
+        );
+
+        /**
+         * @var Collection<int, Kpi> $kpis
+         */
+        $kpis = new Collection;
+
+        /**
+         * @var Carbon $date
+         */
+        foreach ($period as $date) {
+            $kpis->push(static::snapshot($date));
+        }
+
+        return $kpis;
     }
 
     /**
@@ -281,57 +338,5 @@ abstract class KpiDefinition
                 function: $aggregate->toBuilderFunction(),
                 columns: [$column]
             );
-    }
-
-    public static function snapshot(Carbon $date): Kpi
-    {
-        $definition = new static($date);
-
-        $kpi = new Kpi;
-
-        $kpi
-            ->setName(static::getName())
-            ->setValue($definition->getValue())
-            ->setDate($date->clone())
-            ->setMetadata($definition->getMetadata())
-            ->setDescription($definition->getDescription())
-            ->setTags($definition->getTags())
-            ->save();
-
-        return $kpi;
-    }
-
-    /**
-     * @return Collection<int, Kpi>
-     */
-    public static function seed(
-        Carbon $from,
-        Carbon $to,
-        KpiInterval|string $interval,
-    ): Collection {
-
-        /**
-         * @var CarbonPeriod $period
-         */
-        $period = CarbonPeriod::between(
-            start: $from->clone(),
-            end: $to->clone(),
-        )->interval(
-            $interval instanceof KpiInterval ? $interval->toCarbonInterval() : $interval
-        );
-
-        /**
-         * @var Collection<int, Kpi> $kpis
-         */
-        $kpis = new Collection;
-
-        /**
-         * @var Carbon $date
-         */
-        foreach ($period as $date) {
-            $kpis->push(static::snapshot($date));
-        }
-
-        return $kpis;
     }
 }
