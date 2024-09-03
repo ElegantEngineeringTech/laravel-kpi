@@ -80,7 +80,7 @@ enum KpiInterval: string
         return $date->endOf($this->toUnit());
     }
 
-    public function toPerdiod(
+    public function toPeriod(
         Carbon $start,
         Carbon $end,
     ): CarbonPeriod {
@@ -96,5 +96,23 @@ enum KpiInterval: string
     public function toCarbonInterval(): CarbonInterval
     {
         return CarbonInterval::fromString("1 {$this->toUnit()}");
+    }
+
+    public static function fromCarbonInterval(CarbonInterval $interval): self
+    {
+        if ($interval->y) {
+            return self::Year;
+        }
+        if ($interval->m) {
+            return self::Month;
+        }
+        if ($interval->d) {
+            return self::Day;
+        }
+        if ($interval->h) {
+            return self::Hour;
+        }
+
+        return self::Minute;
     }
 }

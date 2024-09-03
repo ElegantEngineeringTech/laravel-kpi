@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\CarbonPeriod;
 use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Kpi\KpiAggregatedValue;
 use Elegantly\Kpi\Models\Kpi;
@@ -181,6 +182,38 @@ it('can query the count of all kpis per interval', function (KpiInterval $interv
     )->toBe(
         $count->toArray()
     );
+})->with([
+    [KpiInterval::Minute],
+    [KpiInterval::Hour],
+    [KpiInterval::Day],
+    [KpiInterval::Month],
+    [KpiInterval::Year],
+]);
+
+it('can query and map to a period all kpis per interval', function (KpiInterval $interval) {
+
+    $units = 1;
+    $from = $interval->toStartOf()->sub($interval->toUnit(), $units);
+    $to = $interval->toEndOf();
+
+    $seeded = TestKpiDefinition::seed(
+        from: $from,
+        to: $to,
+        interval: "1 {$interval->toSmallerUnit()}"
+    );
+
+    $period = CarbonPeriod::between(
+        start: $from,
+        end: $to,
+    )->interval($interval->toCarbonInterval());
+
+    $kpis = TestKpiDefinition::toPeriod(
+        start: $from,
+        end: $to,
+        interval: $interval
+    );
+
+    expect($kpis)->toHaveLength($period->count());
 })->with([
     [KpiInterval::Minute],
     [KpiInterval::Hour],

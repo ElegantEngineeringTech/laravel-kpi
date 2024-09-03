@@ -68,6 +68,8 @@ class KpisSeedCommand extends Command
                 to: $interval->toEndOf($to->clone()),
                 interval: $interval,
             );
+
+            $progress->advance();
         }
 
         $progress->finish();

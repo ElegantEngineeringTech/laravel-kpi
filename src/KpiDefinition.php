@@ -93,6 +93,47 @@ abstract class KpiDefinition
     }
 
     /**
+     * @param  Builder<Kpi>  $query
+     * @return SupportCollection<string, Kpi|null>
+     */
+    public static function toPeriod(
+        Carbon $start,
+        Carbon $end,
+        KpiInterval $interval,
+        ?Builder $query = null,
+    ): mixed {
+
+        $query ??= static::query();
+
+        $period = $interval->toPeriod(
+            start: $start,
+            end: $end
+        );
+
+        $kpis = $query
+            ->where('date', '>=', $period->getStartDate())
+            ->where('date', '<=', $period->getEndDate())
+            ->latestPerInterval($interval)
+            ->get()
+            ->keyBy(fn (Kpi $kpi) => $kpi->date->format($interval->toDateFormat()));
+
+        $results = new SupportCollection;
+
+        /**
+         * @var Carbon $date
+         */
+        foreach ($period as $date) {
+            $key = $date->format($interval->toDateFormat());
+            $results->put(
+                $key,
+                $kpis->get($key) ?? null
+            );
+        }
+
+        return $results;
+    }
+
+    /**
      * @template T of null|KpiInterval
      *
      * @param  Builder<Kpi>  $query
