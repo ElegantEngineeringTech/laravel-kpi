@@ -11,9 +11,9 @@ use Spatie\StructureDiscoverer\Discover;
 
 use function Laravel\Prompts\progress;
 
-class SnapshotKpiCommand extends Command
+class KpisSnapshotCommand extends Command
 {
-    public $signature = 'kpi:snapshot {--date=} {--interval=}';
+    public $signature = 'kpis:snapshot {--date=} {--interval=}';
 
     public $description = 'Take a snapshot of all your defined KPI';
 
@@ -32,7 +32,7 @@ class SnapshotKpiCommand extends Command
         }
 
         progress(
-            'Snapshoting...',
+            'Snapshotting...',
             $definitions,
             function (string $class) use ($date) {
                 $class::create($date);
