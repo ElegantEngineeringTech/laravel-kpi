@@ -195,6 +195,23 @@ abstract class KpiDefinition
     }
 
     /**
+     * @param  Builder<Kpi>  $query
+     * @return Collection<int, Kpi>
+     */
+    public static function latest(
+        ?Builder $query = null,
+        ?KpiInterval $interval = null,
+    ): int|float|SupportCollection {
+        $query ??= static::query();
+
+        if ($interval) {
+            return $query->latestPerInterval($interval)->get();
+        }
+
+        return $query->latest('date')->get();
+    }
+
+    /**
      * @template T of null|KpiInterval
      *
      * @param  Builder<Kpi>  $query
