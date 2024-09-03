@@ -5,8 +5,7 @@ namespace Elegantly\Kpi\Commands;
 use Carbon\Carbon;
 use Elegantly\Kpi\Traits\DiscoverKpiDefinitions;
 use Illuminate\Console\Command;
-
-use function Laravel\Prompts\progress;
+use Laravel\Prompts\Progress;
 
 class KpisSnapshotCommand extends Command
 {
@@ -20,7 +19,7 @@ class KpisSnapshotCommand extends Command
     {
         $interval = $this->option('interval');
 
-        $date = $this->option('date') ? Carbon::parse($this->option('date')) : now();
+        $date = $this->option('date') ? Carbon::parse($this->option('date')) : null;
 
         $definitions = $this->getDefinitions();
 
@@ -30,13 +29,17 @@ class KpisSnapshotCommand extends Command
             });
         }
 
-        progress(
-            'Snapshotting...',
-            $definitions,
-            function (string $class) use ($date) {
-                $class::snapshot($date);
-            }
+        $progress = new Progress(
+            label: 'Snapshotting...',
+            steps: $definitions->count(),
         );
+
+        foreach ($definitions as $className) {
+            $className::snapshot($date);
+            $progress->advance();
+        }
+
+        $progress->finish();
 
         return self::SUCCESS;
     }

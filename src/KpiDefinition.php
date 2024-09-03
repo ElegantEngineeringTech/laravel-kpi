@@ -34,6 +34,10 @@ abstract class KpiDefinition
     abstract public static function getName(): string;
 
     /**
+     * When possible, make sure the returned value is relative to the `date` property.
+     * This will allow you to seed your KPI in the past. When seeding in the past in not possible
+     * feel free to return any value you want like null or 0.
+     *
      * @return null|string|int|float|ArrayObject<int|string, mixed>
      */
     abstract public function getValue(): null|string|int|float|ArrayObject;
