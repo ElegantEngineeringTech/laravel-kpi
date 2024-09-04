@@ -2,16 +2,19 @@
 
 namespace Elegantly\Kpi;
 
+use Brick\Money\Money;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Elegantly\Kpi\Enums\KpiAggregate;
 use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Kpi\Models\Kpi;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\ArrayObject;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 
+/**
+ * @template TValue of null|float|string|Money|array<array-key, mixed>
+ */
 abstract class KpiDefinition
 {
     /**
@@ -38,9 +41,9 @@ abstract class KpiDefinition
      * This will allow you to seed your KPI in the past. When seeding in the past in not possible
      * feel free to return any value you want like null or 0.
      *
-     * @return null|string|int|float|ArrayObject<int|string, mixed>
+     * @return TValue
      */
-    abstract public function getValue(): null|string|int|float|ArrayObject;
+    abstract public function getValue(): null|float|string|Money|array;
 
     /**
      * Display name like "Active Users"
@@ -54,7 +57,7 @@ abstract class KpiDefinition
     /**
      * Tags to store alongside the KPI value
      *
-     * @return string[]
+     * @return null|array<int, scalar>
      */
     public function getTags(): ?array
     {
@@ -64,7 +67,7 @@ abstract class KpiDefinition
     /**
      * Metadata to store alongside the KPI value
      *
-     * @return null|array<string|int, mixed>
+     * @return null|array<array-key, mixed>
      */
     public function getMetadata(): ?array
     {
@@ -80,25 +83,15 @@ abstract class KpiDefinition
     }
 
     /**
-     * Get the difference between two KPI values
+     * @return Kpi<TValue>
      */
-    public static function diff(?Kpi $old, ?Kpi $new): mixed
-    {
-        if ($old === null || $new === null) {
-            return null;
-        }
-
-        if (is_float($old->value) && is_float($new->value)) {
-            return $new->value - $old->value;
-        }
-
-        return null;
-    }
-
     public static function snapshot(?Carbon $date = null): Kpi
     {
         $definition = new static($date);
 
+        /**
+         * @var Kpi<TValue> $kpi
+         */
         $kpi = new Kpi;
 
         $date ??= now();
@@ -116,7 +109,7 @@ abstract class KpiDefinition
     }
 
     /**
-     * @return Collection<int, Kpi>
+     * @return Collection<int, Kpi<TValue>>
      */
     public static function seed(
         Carbon $from,
@@ -135,7 +128,7 @@ abstract class KpiDefinition
         );
 
         /**
-         * @var Collection<int, Kpi> $kpis
+         * @var Collection<int, Kpi<TValue>> $kpis
          */
         $kpis = new Collection;
 
@@ -150,13 +143,16 @@ abstract class KpiDefinition
     }
 
     /**
-     * @return Builder<Kpi>
+     * @return Builder<Kpi<TValue>>
      */
     public static function query(
         ?Carbon $from = null,
         ?Carbon $to = null,
     ): mixed {
 
+        /**
+         * @var Builder<Kpi<TValue>>
+         */
         $query = Kpi::query()->where('name', static::getName());
 
         if ($from) {
@@ -217,11 +213,15 @@ abstract class KpiDefinition
                 ->sub($interval->toUnit(), value: 1)
                 ->format($interval->toDateFormat());
 
+            $value = method_exists(static::class, 'diff')
+                ? static::diff($kpis->get($previousKey), $kpis->get($key))
+                : null;
+
             $results->put(
                 $key,
                 new KpiValue(
                     date: $date,
-                    value: static::diff($kpis->get($previousKey), $kpis->get($key))
+                    value: $value
                 )
             );
         }
@@ -234,14 +234,14 @@ abstract class KpiDefinition
      * Exemple: The users count at each month from `1 year ago` to `now`.
      *
      * @param  Builder<Kpi>  $query
-     * @return SupportCollection<string, Kpi|null>
+     * @return SupportCollection<string, null|Kpi<TValue>>
      */
     public static function getPeriod(
         Carbon $start,
         Carbon $end,
         KpiInterval $interval,
         ?Builder $query = null,
-    ): mixed {
+    ): SupportCollection {
 
         $query ??= static::query();
 

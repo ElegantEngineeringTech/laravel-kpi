@@ -10,3 +10,10 @@ parameters:
     tmpDir: build/phpstan
     checkOctaneCompatibility: true
     checkModelProperties: true
+    ignoreErrors:
+        -
+            message: '#Elegantly\\Kpi\\Models\\Kpi#'
+            identifier: missingType.generics
+        -
+            message: '#Elegantly\\Kpi\\KpiDefinition#'
+            identifier: missingType.generics

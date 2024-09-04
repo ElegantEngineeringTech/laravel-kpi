@@ -2,10 +2,17 @@
 
 namespace Elegantly\Kpi\Tests;
 
+use Elegantly\Kpi\Contracts\HasDifference;
 use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Kpi\KpiDefinition;
+use Elegantly\Kpi\Models\Kpi;
 
-class TestKpiDefinition extends KpiDefinition
+/**
+ * @extends KpiDefinition<null|float>
+ *
+ * @implements HasDifference<null|float>
+ */
+class TestKpiDefinition extends KpiDefinition implements HasDifference
 {
     public static function getName(): string
     {
@@ -37,5 +44,14 @@ class TestKpiDefinition extends KpiDefinition
         return [
             'user' => 1,
         ];
+    }
+
+    public static function diff(?Kpi $old, ?Kpi $new): ?float
+    {
+        if ($new?->value === null || $old?->value === null) {
+            return null;
+        }
+
+        return $new->value - $old->value;
     }
 }

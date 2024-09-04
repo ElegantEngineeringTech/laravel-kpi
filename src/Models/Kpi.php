@@ -7,10 +7,7 @@ use Carbon\Carbon;
 use Elegantly\Kpi\Database\Factories\KpiFactory;
 use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Money\MoneyCast;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\ArrayObject;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,18 +15,19 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 /**
+ * @template TValue of null|float|string|Money|array<array-key, mixed>
+ *
  * @property string $name
  * @property string $type
- * @property null|string|float|ArrayObject<int|string, mixed> $value
+ * @property TValue $value
  * @property ?string $string_value
  * @property ?float $number_value
  * @property ?Money $money_value
  * @property ?string $money_currency
- * @property-read ?ArrayObject<int|string, mixed> $json_value
- * @property-write null|array<int|string, mixed>|ArrayObject<int|string, mixed> $json_value
+ * @property ?array<array-key, mixed> $json_value
  * @property ?string $description
- * @property null|array<int, int|string> $tags
- * @property ?ArrayObject<int|string, mixed> $metadata
+ * @property ?array<int, scalar> $tags
+ * @property ?array<array-key, mixed> $metadata
  * @property Carbon $date
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -45,9 +43,9 @@ class Kpi extends Model
 
     protected $casts = [
         'number_value' => 'float',
-        'json_value' => AsArrayObject::class,
         'money_value' => MoneyCast::class.':money_currency',
-        'metadata' => AsArrayObject::class,
+        'json_value' => 'array',
+        'metadata' => 'array',
         'tags' => 'array',
         'date' => 'datetime',
     ];
@@ -60,13 +58,13 @@ class Kpi extends Model
     ];
 
     /**
-     * @return Attribute<null|string|int|float|ArrayObject<int|string, mixed>,null|string|int|float|ArrayObject<int|string, mixed>>
+     * @return Attribute<TValue,null|int|float|string|Money|array<array-key, mixed>>
      */
     protected function value(): Attribute
     {
         return Attribute::make(
             get: fn () => $this->getValue(),
-            set: function (null|int|float|string|array|Money|Arrayable $value) {
+            set: function (null|int|float|string|Money|array $value) {
                 $this->setValue($value);
 
                 return Arr::only($this->attributes, [
@@ -82,24 +80,27 @@ class Kpi extends Model
     }
 
     /**
-     * @return null|string|int|float|ArrayObject<int|string, mixed>
+     * @return TValue
      */
-    public function getValue(): null|string|int|float|ArrayObject
+    public function getValue(): null|float|string|Money|array
     {
+        /**
+         * @var TValue
+         */
         return match ($this->type) {
             'number_value' => $this->number_value,
-            'json_value' => $this->json_value,
             'string_value' => $this->string_value,
             'money_value' => $this->money_value,
+            'json_value' => $this->json_value,
             default => null,
         };
     }
 
     /**
-     * @param  null|int|float|string|mixed[]|Arrayable<int|string, mixed>|Money  $value
+     * @param  null|int|float|string|Money|array<array-key, mixed>  $value
      */
     public function setValue(
-        null|int|float|string|array|Arrayable|Money $value
+        null|int|float|string|Money|array $value
     ): static {
         $this->resetValue();
 
@@ -112,9 +113,6 @@ class Kpi extends Model
         } elseif (is_array($value)) {
             $this->type = 'json_value';
             $this->json_value = $value;
-        } elseif ($value instanceof Arrayable) {
-            $this->type = 'json_value';
-            $this->json_value = $value->toArray();
         } elseif ($value instanceof Money) {
             $this->type = 'money_value';
             $this->money_value = $value;
@@ -156,31 +154,21 @@ class Kpi extends Model
     }
 
     /**
-     * @param  null|array<int|string, mixed>|ArrayObject<int|string, mixed>  $value
+     * @param  null|array<array-key, mixed>  $value
      */
-    public function setMetadata(array|ArrayObject|null $value): static
+    public function setMetadata(?array $value): static
     {
-        if (is_array($value)) {
-            $this->metadata = new ArrayObject($value);
-        } else {
-            $this->metadata = $value;
-        }
+        $this->metadata = $value;
 
         return $this;
     }
 
     /**
-     * @param  null|array<int, int|string>|Arrayable<int, int|string>  $value
+     * @param  null|array<int, scalar>  $value
      */
-    public function setTags(null|array|Arrayable $value): static
+    public function setTags(?array $value): static
     {
-        if ($value instanceof Arrayable) {
-            /** @var array<int, int|string> $array */
-            $array = $value->toArray();
-            $this->tags = $array;
-        } else {
-            $this->tags = $value;
-        }
+        $this->tags = $value;
 
         return $this;
     }
