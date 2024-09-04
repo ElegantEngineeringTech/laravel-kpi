@@ -181,7 +181,7 @@ class Kpi extends Model
     {
         $grammar = $query->getQuery()->getGrammar();
 
-        return $query->join(
+        $query->join(
             DB::raw(
                 "(SELECT MAX(date) AS max_date FROM kpis GROUP BY {$interval->toSqlFormat($grammar::class, 'date')}) as subquery"
             ),
@@ -189,5 +189,7 @@ class Kpi extends Model
             '=',
             'subquery.max_date'
         );
+
+        return $query;
     }
 }
