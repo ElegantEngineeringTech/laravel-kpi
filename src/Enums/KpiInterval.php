@@ -3,6 +3,7 @@
 namespace Elegantly\Kpi\Enums;
 
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
 use Elegantly\Kpi\SqlAdapters\MySqlAdapter;
@@ -66,14 +67,14 @@ enum KpiInterval: string
         };
     }
 
-    public function toStartOf(?Carbon $date = null): Carbon
+    public function toStartOf(?CarbonInterface $date = null): CarbonInterface
     {
         $date ??= now();
 
         return $date->startOf($this->toUnit());
     }
 
-    public function toEndOf(?Carbon $date = null): Carbon
+    public function toEndOf(?CarbonInterface $date = null): CarbonInterface
     {
         $date ??= now();
 
@@ -81,8 +82,8 @@ enum KpiInterval: string
     }
 
     public function toPeriod(
-        Carbon $start,
-        Carbon $end,
+        CarbonInterface $start,
+        CarbonInterface $end,
     ): CarbonPeriod {
         /**
          * @var CarbonPeriod

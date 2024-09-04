@@ -2,7 +2,7 @@
 
 namespace Elegantly\Kpi;
 
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 
@@ -17,7 +17,7 @@ class KpiValue implements Arrayable, Jsonable
      * @param  TValue  $value
      */
     public function __construct(
-        public Carbon $date,
+        public CarbonInterface $date,
         public mixed $value,
     ) {
         //

@@ -3,7 +3,7 @@
 namespace Elegantly\Kpi;
 
 use Brick\Money\Money;
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Carbon\CarbonPeriod;
 use Elegantly\Kpi\Enums\KpiAggregate;
 use Elegantly\Kpi\Enums\KpiInterval;
@@ -18,10 +18,10 @@ use Illuminate\Support\Collection as SupportCollection;
 abstract class KpiDefinition
 {
     /**
-     * @param  ?Carbon  $date  The date to snapshot
+     * @param  ?CarbonInterface  $date  The date to snapshot
      */
     final public function __construct(
-        public ?Carbon $date = null
+        public ?CarbonInterface $date = null
     ) {
         //
     }
@@ -85,7 +85,7 @@ abstract class KpiDefinition
     /**
      * @return Kpi<TValue>
      */
-    public static function snapshot(?Carbon $date = null): Kpi
+    public static function snapshot(?CarbonInterface $date = null): Kpi
     {
         $definition = new static($date);
 
@@ -112,8 +112,8 @@ abstract class KpiDefinition
      * @return Collection<int, Kpi<TValue>>
      */
     public static function seed(
-        Carbon $from,
-        Carbon $to,
+        CarbonInterface $from,
+        CarbonInterface $to,
         KpiInterval|string $interval,
     ): Collection {
 
@@ -133,7 +133,7 @@ abstract class KpiDefinition
         $kpis = new Collection;
 
         /**
-         * @var Carbon $date
+         * @var CarbonInterface $date
          */
         foreach ($period as $date) {
             $kpis->push(static::snapshot($date));
@@ -146,8 +146,8 @@ abstract class KpiDefinition
      * @return Builder<Kpi<TValue>>
      */
     public static function query(
-        ?Carbon $from = null,
-        ?Carbon $to = null,
+        ?CarbonInterface $from = null,
+        ?CarbonInterface $to = null,
     ): mixed {
 
         /**
@@ -174,8 +174,8 @@ abstract class KpiDefinition
      * @return SupportCollection<string, KpiValue<mixed>>
      */
     public static function getDiffPeriod(
-        Carbon $start,
-        Carbon $end,
+        CarbonInterface $start,
+        CarbonInterface $end,
         KpiInterval $interval,
         ?Builder $query = null,
     ): mixed {
@@ -204,7 +204,7 @@ abstract class KpiDefinition
         $results = new SupportCollection;
 
         /**
-         * @var Carbon $date
+         * @var CarbonInterface $date
          */
         foreach ($period as $date) {
             $key = $date->format($interval->toDateFormat());
@@ -237,8 +237,8 @@ abstract class KpiDefinition
      * @return SupportCollection<string, null|Kpi<TValue>>
      */
     public static function getPeriod(
-        Carbon $start,
-        Carbon $end,
+        CarbonInterface $start,
+        CarbonInterface $end,
         KpiInterval $interval,
         ?Builder $query = null,
     ): SupportCollection {
@@ -263,7 +263,7 @@ abstract class KpiDefinition
         $results = new SupportCollection;
 
         /**
-         * @var Carbon $date
+         * @var CarbonInterface $date
          */
         foreach ($period as $date) {
             $key = $date->format($interval->toDateFormat());

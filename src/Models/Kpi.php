@@ -3,7 +3,7 @@
 namespace Elegantly\Kpi\Models;
 
 use Brick\Money\Money;
-use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Elegantly\Kpi\Database\Factories\KpiFactory;
 use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Money\MoneyCast;
@@ -28,9 +28,9 @@ use Illuminate\Support\Facades\DB;
  * @property ?string $description
  * @property ?array<int, scalar> $tags
  * @property ?array<array-key, mixed> $metadata
- * @property Carbon $date
- * @property Carbon $created_at
- * @property Carbon $updated_at
+ * @property CarbonInterface $date
+ * @property CarbonInterface $created_at
+ * @property CarbonInterface $updated_at
  */
 class Kpi extends Model
 {
@@ -146,7 +146,7 @@ class Kpi extends Model
         return $this;
     }
 
-    public function setDate(Carbon $date): static
+    public function setDate(CarbonInterface $date): static
     {
         $this->date = $date;
 
