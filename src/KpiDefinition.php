@@ -219,7 +219,10 @@ abstract class KpiDefinition
 
             $results->put(
                 $key,
-                static::diff($kpis->get($previousKey), $kpis->get($key))
+                new KpiValue(
+                    date: $date,
+                    value: static::diff($kpis->get($previousKey), $kpis->get($key))
+                )
             );
         }
 
