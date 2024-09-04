@@ -43,7 +43,7 @@ class Kpi extends Model
 
     protected $casts = [
         'number_value' => 'float',
-        'money_value' => MoneyCast::class.':money_currency',
+        'money_value' => MoneyCast::class . ':money_currency',
         'json_value' => 'array',
         'metadata' => 'array',
         'tags' => 'array',
@@ -63,7 +63,7 @@ class Kpi extends Model
     protected function value(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->getValue(),
+            get: fn() => $this->getValue(),
             set: function (null|int|float|string|Money|array $value) {
                 $this->setValue($value);
 
