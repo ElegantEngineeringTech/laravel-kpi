@@ -79,6 +79,22 @@ abstract class KpiDefinition
         return null;
     }
 
+    /**
+     * Get the difference between two KPI values
+     */
+    public static function diff(?Kpi $old, ?Kpi $new): mixed
+    {
+        if ($old === null || $new === null) {
+            return null;
+        }
+
+        if (is_float($old->value) && is_float($new->value)) {
+            return $new->value - $old->value;
+        }
+
+        return null;
+    }
+
     public static function snapshot(?Carbon $date = null): Kpi
     {
         $definition = new static($date);
@@ -154,10 +170,14 @@ abstract class KpiDefinition
     }
 
     /**
+     * Retreive the latest KPI value on the given period at the given interval
+     * Each value is the difference between the current and the previous value.
+     * Exemple: The new users at each month from `1 year ago` to `now`.
+     *
      * @param  Builder<Kpi>  $query
-     * @return SupportCollection<string, Kpi|null>
+     * @return SupportCollection<string, KpiValue<mixed>>
      */
-    public static function toPeriod(
+    public static function getDiffPeriod(
         Carbon $start,
         Carbon $end,
         KpiInterval $interval,
@@ -171,12 +191,71 @@ abstract class KpiDefinition
             end: $end
         );
 
-        $kpis = $query
-            ->where('date', '>=', $period->getStartDate())
-            ->where('date', '<=', $period->getEndDate())
-            ->latestPerInterval($interval)
-            ->get()
-            ->keyBy(fn (Kpi $kpi) => $kpi->date->format($interval->toDateFormat()));
+        /**
+         * @var Collection<string, Kpi> $kpis
+         */
+        $kpis = static::latest(
+            query: $query
+                ->where(
+                    'date',
+                    '>=',
+                    $period->getStartDate()->clone()->sub($interval->toUnit(), value: 1)
+                )
+                ->where('date', '<=', $period->getEndDate()),
+            interval: $interval
+        )->keyBy(fn (Kpi $kpi) => $kpi->date->format($interval->toDateFormat()));
+
+        $results = new SupportCollection;
+
+        /**
+         * @var Carbon $date
+         */
+        foreach ($period as $date) {
+            $key = $date->format($interval->toDateFormat());
+
+            $previousKey = $date->clone()
+                ->sub($interval->toUnit(), value: 1)
+                ->format($interval->toDateFormat());
+
+            $results->put(
+                $key,
+                static::diff($kpis->get($previousKey), $kpis->get($key))
+            );
+        }
+
+        return $results;
+    }
+
+    /**
+     * Retreive the latest KPI on the given period at the given interval
+     * Exemple: The users count at each month from `1 year ago` to `now`.
+     *
+     * @param  Builder<Kpi>  $query
+     * @return SupportCollection<string, Kpi|null>
+     */
+    public static function getPeriod(
+        Carbon $start,
+        Carbon $end,
+        KpiInterval $interval,
+        ?Builder $query = null,
+    ): mixed {
+
+        $query ??= static::query();
+
+        $period = $interval->toPeriod(
+            start: $start,
+            end: $end
+        );
+
+        /**
+         * @var Collection<string, Kpi> $kpis
+         */
+        $kpis = static::latest(
+            query: $query
+                ->where('date', '>=', $period->getStartDate())
+                ->where('date', '<=', $period->getEndDate()),
+            interval: $interval,
+        )->keyBy(fn (Kpi $kpi) => $kpi->date->format($interval->toDateFormat()));
 
         $results = new SupportCollection;
 
@@ -187,7 +266,7 @@ abstract class KpiDefinition
             $key = $date->format($interval->toDateFormat());
             $results->put(
                 $key,
-                $kpis->get($key) ?? null
+                $kpis->get($key)
             );
         }
 
@@ -201,11 +280,11 @@ abstract class KpiDefinition
     public static function latest(
         ?Builder $query = null,
         ?KpiInterval $interval = null,
-    ): int|float|SupportCollection {
+    ): Collection {
         $query ??= static::query();
 
         if ($interval) {
-            return $query->latestPerInterval($interval)->get();
+            return $query->latestPerInterval($interval)->latest('date')->get();
         }
 
         return $query->latest('date')->get();
@@ -216,7 +295,7 @@ abstract class KpiDefinition
      *
      * @param  Builder<Kpi>  $query
      * @param  T  $interval
-     * @return (T is null ? int|float : SupportCollection<int, KpiAggregatedValue<int|float>>)
+     * @return (T is null ? int|float : SupportCollection<int, KpiValue<int|float>>)
      */
     public static function max(
         ?Builder $query = null,
@@ -236,7 +315,7 @@ abstract class KpiDefinition
      *
      * @param  Builder<Kpi>  $query
      * @param  T  $interval
-     * @return (T is null ? int|float : SupportCollection<int, KpiAggregatedValue<int|float>>)
+     * @return (T is null ? int|float : SupportCollection<int, KpiValue<int|float>>)
      */
     public static function min(
         ?Builder $query = null,
@@ -256,7 +335,7 @@ abstract class KpiDefinition
      *
      * @param  Builder<Kpi>  $query
      * @param  T  $interval
-     * @return (T is null ? int|float : SupportCollection<int, KpiAggregatedValue<int|float>>)
+     * @return (T is null ? int|float : SupportCollection<int, KpiValue<int|float>>)
      */
     public static function sum(
         ?Builder $query = null,
@@ -276,7 +355,7 @@ abstract class KpiDefinition
      *
      * @param  Builder<Kpi>  $query
      * @param  T  $interval
-     * @return (T is null ? int|float : SupportCollection<int, KpiAggregatedValue<int|float>>)
+     * @return (T is null ? int|float : SupportCollection<int, KpiValue<int|float>>)
      */
     public static function avg(
         ?Builder $query = null,
@@ -296,7 +375,7 @@ abstract class KpiDefinition
      *
      * @param  Builder<Kpi>  $query
      * @param  T  $interval
-     * @return (T is null ? int : SupportCollection<int, KpiAggregatedValue<int>>)
+     * @return (T is null ? int : SupportCollection<int, KpiValue<int>>)
      */
     public static function count(
         ?Builder $query = null,
@@ -304,7 +383,7 @@ abstract class KpiDefinition
         ?KpiInterval $interval = null,
     ): int|SupportCollection {
         /**
-         * @var int|SupportCollection<int, KpiAggregatedValue<int>>
+         * @var int|SupportCollection<int, KpiValue<int>>
          */
         return static::aggregate(
             aggregate: KpiAggregate::Count,
@@ -319,7 +398,7 @@ abstract class KpiDefinition
      *
      * @param  Builder<Kpi>  $query
      * @param  T  $interval
-     * @return (T is null ? int|float : SupportCollection<int, KpiAggregatedValue<int|float>>)
+     * @return (T is null ? int|float : SupportCollection<int, KpiValue<int|float>>)
      */
     public static function aggregate(
         KpiAggregate $aggregate,
@@ -344,7 +423,7 @@ abstract class KpiDefinition
                 ->orderBy('date_group')
                 ->get();
 
-            return $results->map(fn (object $result) => new KpiAggregatedValue(
+            return $results->map(fn (object $result) => new KpiValue(
                 date: $interval->fromDateFormat($result->date_group) ?: now(),
                 value: $result->aggregated_value,
             ));

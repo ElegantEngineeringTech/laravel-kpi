@@ -2,7 +2,7 @@
 
 use Carbon\CarbonPeriod;
 use Elegantly\Kpi\Enums\KpiInterval;
-use Elegantly\Kpi\KpiAggregatedValue;
+use Elegantly\Kpi\KpiValue;
 use Elegantly\Kpi\Models\Kpi;
 use Elegantly\Kpi\Tests\TestKpiDefinition;
 
@@ -46,8 +46,8 @@ it('can query the sum of all kpis per interval', function (KpiInterval $interval
     $sum = TestKpiDefinition::sum(
         interval: $interval
     )
-        ->keyBy(fn (KpiAggregatedValue $value) => $value->date->format($interval->toDateFormat()))
-        ->map(fn (KpiAggregatedValue $value) => (float) round($value->value, 2));
+        ->keyBy(fn (KpiValue $value) => $value->date->format($interval->toDateFormat()))
+        ->map(fn (KpiValue $value) => (float) round($value->value, 2));
 
     expect(
         $kpis->toArray()
@@ -78,8 +78,8 @@ it('can query the avg of all kpis per interval', function (KpiInterval $interval
     $avg = TestKpiDefinition::avg(
         interval: $interval
     )
-        ->keyBy(fn (KpiAggregatedValue $value) => $value->date->format($interval->toDateFormat()))
-        ->map(fn (KpiAggregatedValue $value) => (float) round($value->value, 2));
+        ->keyBy(fn (KpiValue $value) => $value->date->format($interval->toDateFormat()))
+        ->map(fn (KpiValue $value) => (float) round($value->value, 2));
 
     expect(
         $kpis->toArray()
@@ -110,8 +110,8 @@ it('can query the max of all kpis per interval', function (KpiInterval $interval
     $max = TestKpiDefinition::max(
         interval: $interval
     )
-        ->keyBy(fn (KpiAggregatedValue $value) => $value->date->format($interval->toDateFormat()))
-        ->map(fn (KpiAggregatedValue $value) => (float) $value->value);
+        ->keyBy(fn (KpiValue $value) => $value->date->format($interval->toDateFormat()))
+        ->map(fn (KpiValue $value) => (float) $value->value);
 
     expect(
         $kpis->toArray()
@@ -142,8 +142,8 @@ it('can query the min of all kpis per interval', function (KpiInterval $interval
     $min = TestKpiDefinition::min(
         interval: $interval
     )
-        ->keyBy(fn (KpiAggregatedValue $value) => $value->date->format($interval->toDateFormat()))
-        ->map(fn (KpiAggregatedValue $value) => (float) $value->value);
+        ->keyBy(fn (KpiValue $value) => $value->date->format($interval->toDateFormat()))
+        ->map(fn (KpiValue $value) => (float) $value->value);
 
     expect(
         $kpis->toArray()
@@ -174,8 +174,8 @@ it('can query the count of all kpis per interval', function (KpiInterval $interv
     $count = TestKpiDefinition::count(
         interval: $interval
     )
-        ->keyBy(fn (KpiAggregatedValue $value) => $value->date->format($interval->toDateFormat()))
-        ->map(fn (KpiAggregatedValue $value) => $value->value);
+        ->keyBy(fn (KpiValue $value) => $value->date->format($interval->toDateFormat()))
+        ->map(fn (KpiValue $value) => $value->value);
 
     expect(
         $kpis->toArray()
@@ -207,7 +207,39 @@ it('can query and map to a period all kpis per interval', function (KpiInterval 
         end: $to,
     )->interval($interval->toCarbonInterval());
 
-    $kpis = TestKpiDefinition::toPeriod(
+    $kpis = TestKpiDefinition::getPeriod(
+        start: $from,
+        end: $to,
+        interval: $interval
+    );
+
+    expect($kpis)->toHaveLength($period->count());
+})->with([
+    [KpiInterval::Minute],
+    [KpiInterval::Hour],
+    [KpiInterval::Day],
+    [KpiInterval::Month],
+    [KpiInterval::Year],
+]);
+
+it('can query and map to a period all kpis differences per interval', function (KpiInterval $interval) {
+
+    $units = 1;
+    $from = $interval->toStartOf()->sub($interval->toUnit(), $units);
+    $to = $interval->toEndOf();
+
+    $seeded = TestKpiDefinition::seed(
+        from: $from,
+        to: $to,
+        interval: "1 {$interval->toSmallerUnit()}"
+    );
+
+    $period = CarbonPeriod::between(
+        start: $from,
+        end: $to,
+    )->interval($interval->toCarbonInterval());
+
+    $kpis = TestKpiDefinition::getDiffPeriod(
         start: $from,
         end: $to,
         interval: $interval

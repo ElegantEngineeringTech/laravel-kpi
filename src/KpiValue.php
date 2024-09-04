@@ -11,7 +11,7 @@ use Illuminate\Contracts\Support\Jsonable;
  *
  * @implements Arrayable<string, TValue>
  */
-class KpiAggregatedValue implements Arrayable, Jsonable
+class KpiValue implements Arrayable, Jsonable
 {
     /**
      * @param  TValue  $value
