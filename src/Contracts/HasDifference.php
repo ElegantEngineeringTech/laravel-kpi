@@ -2,20 +2,10 @@
 
 namespace Elegantly\Kpi\Contracts;
 
-use Brick\Money\Money;
-use Elegantly\Kpi\Models\Kpi;
-
 /**
- * @template TValue of null|float|string|Money|array<array-key, mixed>
+ * The inferface is only used in order to indicate the difference between 2 KPI makes sense
  */
 interface HasDifference
 {
-    /**
-     * Get the difference between two KPI values
-     *
-     * @param  Kpi<TValue>  $old
-     * @param  Kpi<TValue>  $new
-     * @return TValue
-     */
-    public static function diff(?Kpi $old, ?Kpi $new): null|float|string|Money|array;
+    //
 }

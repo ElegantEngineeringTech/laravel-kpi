@@ -213,9 +213,7 @@ abstract class KpiDefinition
                 ->sub($interval->toUnit(), value: 1)
                 ->format($interval->toDateFormat());
 
-            $value = method_exists(static::class, 'diff')
-                ? static::diff($kpis->get($previousKey), $kpis->get($key))
-                : null;
+            $value = static::diff($kpis->get($previousKey), $kpis->get($key));
 
             $results->put(
                 $key,
@@ -227,6 +225,18 @@ abstract class KpiDefinition
         }
 
         return $results;
+    }
+
+    /**
+     * Get the difference between two KPI values
+     *
+     * @param  Kpi<TValue>  $old
+     * @param  Kpi<TValue>  $new
+     * @return TValue
+     */
+    public static function diff(?Kpi $old, ?Kpi $new): null|float|string|Money|array
+    {
+        return null;
     }
 
     /**
