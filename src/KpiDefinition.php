@@ -234,10 +234,7 @@ abstract class KpiDefinition
      * @param  Kpi<TValue>  $new
      * @return TValue
      */
-    public static function diff(?Kpi $old, ?Kpi $new): null|float|string|Money|array
-    {
-        return null;
-    }
+    abstract public static function diff(?Kpi $old, ?Kpi $new): null|float|string|Money|array;
 
     /**
      * Retreive the latest KPI on the given period at the given interval
