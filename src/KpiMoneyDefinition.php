@@ -16,6 +16,6 @@ abstract class KpiMoneyDefinition extends KpiDefinition
             return null;
         }
 
-        return $new->value->minus($new->value);
+        return $new->value->minus($old->value);
     }
 }
