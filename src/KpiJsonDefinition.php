@@ -5,9 +5,10 @@ namespace Elegantly\Kpi;
 use Elegantly\Kpi\Models\Kpi;
 
 /**
- * @template TValue of array<array-key, mixed>
+ * @template TKey of array-key
+ * @template TValue
  *
- * @extends KpiDefinition<null|TValue>
+ * @extends KpiDefinition<null|array<TKey, TValue>>
  */
 abstract class KpiJsonDefinition extends KpiDefinition
 {
