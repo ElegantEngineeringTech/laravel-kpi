@@ -4,6 +4,7 @@ namespace Elegantly\Kpi\Traits;
 
 use Elegantly\Kpi\KpiDefinition;
 use Illuminate\Support\Collection;
+use Spatie\StructureDiscoverer\Data\DiscoveredClass;
 use Spatie\StructureDiscoverer\Discover;
 
 trait DiscoverKpiDefinitions
@@ -23,9 +24,13 @@ trait DiscoverKpiDefinitions
          */
         $path = config('kpi.discover.path');
 
-        $discovered = Discover::in(app_path($path))
+        $discovered = Discover::in(
+            app_path($path),
+            dirname(__DIR__)
+        )
             ->classes()
             ->extending(KpiDefinition::class)
+            ->full()
             ->get();
 
         foreach ($discovered as $item) {
@@ -34,11 +39,11 @@ trait DiscoverKpiDefinitions
                  * @var class-string<KpiDefinition> $item
                  */
                 $definitions->push($item);
-            } else {
+            } elseif ($item instanceof DiscoveredClass && ! $item->isAbstract) {
                 /**
                  * @var class-string<KpiDefinition> $className
                  */
-                $className = "{$item->namespace}\{$item->name}";
+                $className = "{$item->namespace}\\{$item->name}";
                 $definitions->push($className);
             }
         }
