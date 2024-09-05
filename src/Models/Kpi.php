@@ -5,14 +5,11 @@ namespace Elegantly\Kpi\Models;
 use Brick\Money\Money;
 use Carbon\CarbonInterface;
 use Elegantly\Kpi\Database\Factories\KpiFactory;
-use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Money\MoneyCast;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 
 /**
  * @template TValue of null|float|string|Money|array<array-key, mixed>
@@ -171,25 +168,5 @@ class Kpi extends Model
         $this->tags = $value;
 
         return $this;
-    }
-
-    /**
-     * @param  Builder<self>  $query
-     * @return Builder<self>
-     */
-    public function scopeLatestPerInterval(Builder $query, KpiInterval $interval): Builder
-    {
-        $grammar = $query->getQuery()->getGrammar();
-
-        $query->join(
-            DB::raw(
-                "(SELECT MAX(id) AS max_id FROM kpis GROUP BY {$interval->toSqlFormat($grammar::class, 'date')}) as subquery"
-            ),
-            'kpis.id',
-            '=',
-            'subquery.max_id'
-        );
-
-        return $query;
     }
 }

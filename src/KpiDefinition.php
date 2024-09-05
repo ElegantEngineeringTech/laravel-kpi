@@ -294,7 +294,22 @@ abstract class KpiDefinition
         $query ??= static::query();
 
         if ($interval) {
-            return $query->latestPerInterval($interval)->latest('date')->get();
+            $grammar = $query->getQuery()->getGrammar();
+
+            $subquery = static::query()
+                ->toBase()
+                ->selectRaw('MAX(id) AS max_id')
+                ->groupByRaw($interval->toSqlFormat($grammar::class, 'date'));
+
+            $query->toBase()->joinSub(
+                query: $subquery,
+                as: 'subquery',
+                first: 'kpis.id',
+                operator: '=',
+                second: 'subquery.max_id'
+            );
+
+            return $query->latest('date')->get();
         }
 
         return $query->latest('date')->get();

@@ -4,7 +4,6 @@ use Brick\Money\Money;
 use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Kpi\Models\Kpi;
 use Elegantly\Kpi\Tests\TestKpiDefinition;
-use Illuminate\Support\Collection;
 
 it('sets the right value column', function (mixed $value, array $expected) {
     $kpi = new Kpi;
@@ -66,10 +65,7 @@ it('can query 1 kpi per interval', function (KpiInterval $interval) {
         interval: "1 {$interval->toSmallerUnit()}"
     );
 
-    $query = TestKpiDefinition::query()->latestPerInterval($interval);
-
-    /** @var Collection<int, Kpi> $kpis */
-    $kpis = $query->get();
+    $kpis = TestKpiDefinition::latest(interval: $interval);
 
     $kpisCountBy = $kpis->countBy(fn (Kpi $kpi) => $kpi->date->format($interval->toDateFormat()));
 
