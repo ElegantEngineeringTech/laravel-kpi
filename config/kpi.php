@@ -15,7 +15,7 @@ return [
     'discover' => [
         'enabled' => true,
         /**
-         * This path will be used with `app_path` helper like `app_path('/app/Kpis')`
+         * This path will be used with `app_path` helper like `app_path('Kpis')`
          */
         'path' => 'Kpis',
     ],
