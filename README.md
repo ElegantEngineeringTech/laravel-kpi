@@ -291,6 +291,10 @@ UsersCountKpi::sum(...);
 UsersCountKpi::count(...);
 ```
 
+## Filament Plugin
+
+Display your KPIs in a beatiful way with 1 line using our filament plugin: [`elegantly/filament-kpi`](https://github.com/ElegantEngineeringTech/filament-kpi)
+
 ## Testing
 
 Run the tests with:
