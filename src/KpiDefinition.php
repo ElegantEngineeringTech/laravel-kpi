@@ -146,8 +146,8 @@ abstract class KpiDefinition
      * @return Builder<Kpi<TValue>>
      */
     public static function query(
-        ?CarbonInterface $from = null,
-        ?CarbonInterface $to = null,
+        ?CarbonInterface $start = null,
+        ?CarbonInterface $end = null,
     ): mixed {
 
         /**
@@ -155,20 +155,20 @@ abstract class KpiDefinition
          */
         $query = Kpi::query()->where('name', static::getName());
 
-        if ($from) {
-            $query->where('date', '>=', $from);
+        if ($start) {
+            $query->where('date', '>=', $start);
         }
-        if ($to) {
-            $query->where('date', '<=', $to);
+        if ($end) {
+            $query->where('date', '<=', $end);
         }
 
         return $query;
     }
 
     /**
-     * Retreive the latest KPI value on the given period at the given interval
+     * Retreive the latest KPI difference on the given period at the given interval
      * Each value is the difference between the current and the previous value.
-     * Exemple: The new users at each month from `1 year ago` to `now`.
+     * Exemple: The new users for each month from `1 year ago` to `now`.
      *
      * @param  Builder<Kpi>  $query
      * @return SupportCollection<string, KpiValue<mixed>>
@@ -284,14 +284,21 @@ abstract class KpiDefinition
     }
 
     /**
+     * Retreive the latest KPI at the given interval
+     *
      * @param  Builder<Kpi>  $query
      * @return Collection<int, Kpi>
      */
     public static function latest(
+        ?CarbonInterface $start = null,
+        ?CarbonInterface $end = null,
         ?Builder $query = null,
         ?KpiInterval $interval = null,
     ): Collection {
-        $query ??= static::query();
+        $query ??= static::query(
+            start: $start,
+            end: $end
+        );
 
         if ($interval) {
             $grammar = $query->getQuery()->getGrammar();
@@ -323,12 +330,16 @@ abstract class KpiDefinition
      * @return (T is null ? int|float : SupportCollection<int, KpiValue<int|float>>)
      */
     public static function max(
+        ?CarbonInterface $start = null,
+        ?CarbonInterface $end = null,
         ?Builder $query = null,
         string $column = 'number_value',
         ?KpiInterval $interval = null,
     ): int|float|SupportCollection {
         return static::aggregate(
             aggregate: KpiAggregate::Max,
+            start: $start,
+            end: $end,
             query: $query,
             column: $column,
             interval: $interval
@@ -343,12 +354,16 @@ abstract class KpiDefinition
      * @return (T is null ? int|float : SupportCollection<int, KpiValue<int|float>>)
      */
     public static function min(
+        ?CarbonInterface $start = null,
+        ?CarbonInterface $end = null,
         ?Builder $query = null,
         string $column = 'number_value',
         ?KpiInterval $interval = null,
     ): int|float|SupportCollection {
         return static::aggregate(
             aggregate: KpiAggregate::Min,
+            start: $start,
+            end: $end,
             query: $query,
             column: $column,
             interval: $interval
@@ -363,12 +378,16 @@ abstract class KpiDefinition
      * @return (T is null ? int|float : SupportCollection<int, KpiValue<int|float>>)
      */
     public static function sum(
+        ?CarbonInterface $start = null,
+        ?CarbonInterface $end = null,
         ?Builder $query = null,
         string $column = 'number_value',
         ?KpiInterval $interval = null,
     ): int|float|SupportCollection {
         return static::aggregate(
             aggregate: KpiAggregate::Sum,
+            start: $start,
+            end: $end,
             query: $query,
             column: $column,
             interval: $interval
@@ -383,12 +402,16 @@ abstract class KpiDefinition
      * @return (T is null ? int|float : SupportCollection<int, KpiValue<int|float>>)
      */
     public static function avg(
+        ?CarbonInterface $start = null,
+        ?CarbonInterface $end = null,
         ?Builder $query = null,
         string $column = 'number_value',
         ?KpiInterval $interval = null,
     ): int|float|SupportCollection {
         return static::aggregate(
             aggregate: KpiAggregate::Average,
+            start: $start,
+            end: $end,
             query: $query,
             column: $column,
             interval: $interval
@@ -403,6 +426,8 @@ abstract class KpiDefinition
      * @return (T is null ? int : SupportCollection<int, KpiValue<int>>)
      */
     public static function count(
+        ?CarbonInterface $start = null,
+        ?CarbonInterface $end = null,
         ?Builder $query = null,
         string $column = 'number_value',
         ?KpiInterval $interval = null,
@@ -412,6 +437,8 @@ abstract class KpiDefinition
          */
         return static::aggregate(
             aggregate: KpiAggregate::Count,
+            start: $start,
+            end: $end,
             query: $query,
             column: $column,
             interval: $interval
@@ -427,11 +454,16 @@ abstract class KpiDefinition
      */
     public static function aggregate(
         KpiAggregate $aggregate,
+        ?CarbonInterface $start = null,
+        ?CarbonInterface $end = null,
         ?Builder $query = null,
         string $column = 'number_value',
         ?KpiInterval $interval = null,
     ): int|float|SupportCollection {
-        $query ??= static::query();
+        $query ??= static::query(
+            start: $start,
+            end: $end
+        );
 
         if ($interval) {
 
