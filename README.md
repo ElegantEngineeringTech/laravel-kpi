@@ -1,40 +1,41 @@
-# Store, analyse and retrieve KPI over time in your Laravel App
+# Store, Analyze, and Retrieve KPIs Over Time in Your Laravel App
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/elegantly/laravel-kpi.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-kpi)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/elegantengineeringtech/laravel-kpi/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/elegantengineeringtech/laravel-kpi/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/elegantengineeringtech/laravel-kpi/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/elegantengineeringtech/laravel-kpi/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/elegantly/laravel-kpi.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-kpi)
 
-This package provides a way to store kpis from your app in your database and then retreive them easily in different ways. It is espacially usefull to tracks things related to your models like:
+This package provides an easy way to store KPIs from your application in your database and retrieve them in various formats. It's especially useful for tracking data related to your models, such as:
 
--   the number of users
--   the number of subscribed users
--   the total revenue ...
+-   Number of users
+-   Number of subscribed users
+-   Total revenue
+-   And more...
 
-It's a perfect tool for building dashboard ans display stats and charts.
+It's a perfect tool for building dashboards and displaying stats and charts.
 
 ## Installation
 
-You can install the package via composer:
+Install the package via Composer:
 
 ```bash
 composer require elegantly/laravel-kpi
 ```
 
-You should publish and run the migrations with:
+Publish and run the migrations with:
 
 ```bash
 php artisan vendor:publish --tag="kpi-migrations"
 php artisan migrate
 ```
 
-You can publish the config file with:
+Publish the configuration file with:
 
 ```bash
 php artisan vendor:publish --tag="kpi-config"
 ```
 
-This is the contents of the published config file:
+Here is the content of the published config file:
 
 ```php
 return [
@@ -44,15 +45,16 @@ return [
     | Discover Definitions
     |--------------------------------------------------------------------------
     |
-    | If enabled is set to true, your KPI definitions will be automatically discovered when taking snapshot.
-    | Customize the path to indicate the directory where your definitions are located in your app.
-    | The KPI definitions will be discovered from the path and its subdirectories
+    | If 'enabled' is set to true, your KPI definitions will be automatically
+    | discovered when taking snapshots.
+    | Set the 'path' to specify the directory where your KPI definitions are stored.
+    | Definitions will be discovered from this path and its subdirectories.
     |
     */
     'discover' => [
         'enabled' => true,
         /**
-         * This path will be used with `app_path` helper like `app_path('Kpis')`
+         * This path will be used with the `app_path` helper, like `app_path('Kpis')`.
          */
         'path' => 'Kpis',
     ],
@@ -62,8 +64,8 @@ return [
     | Registered Definitions
     |--------------------------------------------------------------------------
     |
-    | You can manually register your kpi definitions if you are not using "auto-discover"
-    | or if you want to add more deifnitions not stored in the main path
+    | You can manually register your KPI definitions if you are not using
+    | "discover" or if you want to add additional definitions located elsewhere.
     |
     */
     'definitions' => [],
@@ -72,68 +74,64 @@ return [
 
 ## Concepts
 
-This package is not a query builder, it's based on a `kpis` table where you will store all your kpis. With this approach, your kpis from the past (like the number of users you had a year ago) will not be altered if you permanently delete a model.
+This package is not a query builder. Instead, it is based on a `kpis` table where all KPIs are stored. This allows historical data (e.g., the number of users a year ago) to remain intact, even if models are permanently deleted.
 
-Retreiving kpis will also be much more efficient when asking for computed values that often require join like "users who have purchased last week" for example.
+Retrieving KPIs is also way more efficient when calculating complex values, such as "users who made a purchase last week."
 
-A Kpi could be simple or complex, here is some examples:
+A KPI can be simple or complex. Examples include:
 
--   The number of registerd users
--   The number of active users each month
--   The total amount invoiced to customer
--   The number of recurring customers
--   The Average Order Value
+-   Number of registered users
+-   Monthly active users
+-   Total revenue invoiced to customers
+-   Number of recurring customers
+-   Average Order Value
 -   ...
 
-A Kpi can be "absolute" or "relative":
+KPIs can be either "absolute" or "relative":
 
--   An absolute Kpi is a Kpi representing the state of the world like the number of users for exemple.
--   A relative Kpi is a Kpi representing a variation of the world like the number of new users each day for exemple.
+-   An **absolute KPI** represents a current state, such as the total number of users.
+-   A **relative KPI** represents a change, such as the number of new users each day.
 
-Sometimes the most relevant Kpi is the relative one and sometimes it's the absolute one. This really depends on the context.
-
-99% of the time you can extract the "relative" Kpi form the "absolute" one and vice versa.
-This is wy I would recommand you to store you Kpi in only the "absolute" way and compute the relative value when needed.
+Depending on the context, either an absolute or relative KPI may be more relevant. In most cases, relative KPIs can be derived from absolute ones, and vice versa. Therefore, it's often recommended to store KPIs as "absolute" and compute relative values when needed.
 
 ## Usage
 
-A Kpi is represented by two things:
+A KPI consists of two key components:
 
--   A definition
--   Its values
+-   A **definition**
+-   Its **values**
 
-The definition is a simple class extending `KpiDefinition` where you can configure everything.
+The **definition** is a class extending `KpiDefinition`, where you configure the KPI.
 
-Each definition must have a unique `name` like "users:count" for exemple.
+Each KPI definition must have a unique `name`, such as `users:count`.
 
-The values are stored in the `kpis` table and are represented by the `Kpi` model.
+The **values** are stored in the `kpis` table and represented by the `Kpi` model.
 
-A Kpi value can have:
+A KPI value may contain:
 
--   A value: float, string, Money, json.
--   A description: string (optional)
--   Tags: array of strings (optional)
--   Metadata: json (optional)
--   A date: Datetime
+-   A value (float, string, Money, JSON)
+-   A description (optional)
+-   Tags (optional)
+-   Metadata (optional)
+-   A timestamp
 
 ### 1. Defining a KPI
 
-As said above, you will have to store your kpis in the database.
-
-A single KPI is represented by a single `KpiDefinition` class, to make the experience smoother the package provides a class for each type:
+Each KPI is represented by a single `KpiDefinition` class. The package offers predefined classes for each data type:
 
 -   `KpiFloatDefinition`
 -   `KpiStringDefinition`
 -   `KpiMoneyDefinition`
 -   `KpiJsonDefinition`
 
-but you could also use `KpiDefinition` if you want or need.
+You can also extend `KpiDefinition` if you need custom behavior.
+
+Example:
 
 ```php
 namespace App\Kpis\Users;
 
 use App\Models\User;
-use Elegantly\Kpi\Contracts\HasDifference;
 use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Kpi\KpiFloatDefinition;
 
@@ -145,7 +143,7 @@ class UsersCountKpi extends KpiFloatDefinition
     }
 
     /**
-     * This Kpi is intended to be snapshotted every Day
+     * This KPI is intended to be snapshotted every day.
      */
     public static function getSnapshotInterval(): KpiInterval
     {
@@ -171,7 +169,7 @@ class UsersCountKpi extends KpiFloatDefinition
     /**
      * Tags to store alongside the KPI value
      */
-     public function getTags(): ?array
+    public function getTags(): ?array
     {
         return null;
     }
@@ -186,63 +184,56 @@ class UsersCountKpi extends KpiFloatDefinition
 }
 ```
 
-As you can see that the `KpiDefinition` class have one property: `date`. The property represent the theorical date of the snapshot.
-When you can compute your KPI in the past, try to use `date`, this will allow you to seed your KPIs in the past.
+As shown, the `KpiDefinition` class has a `date` property, representing the snapshot date. When possible, use `date` in `getValue`, this will allow you to seed your KPIs with past data.
 
-### 2. Snapotting your KPIs
+### 2. Snapshotting KPIs
 
-There are two ways to snapshot a KPI:
+There are two ways to create KPI snapshots:
 
 -   Schedule the `kpis:snapshot` command
--   Manual snaphot
+-   Manually create snapshots
 
-#### Using the command and the scheduler
+#### Using the Command and Scheduler
 
-This package assumes that you want to snapshot every KPI at a regular interval.
-For exemple: capturing the number of active user every minute.
+To capture KPI data at regular intervals (e.g., hourly or daily), schedule the `kpis:snapshot` command in your application's scheduler.
 
-To do that, you should schedule the command `kpis:snapshot` to run at regular interval in your app.
-
-Every KPI are not always snashotted at the same interval so you will need to schedule the command multiple times:
+Example:
 
 ```php
 $schedule->command(SnapshotKpisCommand::class, [
-    'interval'=> KpiInteval::Hour
+    'interval' => KpiInterval::Hour,
 ])->everyHour();
 
 $schedule->command(SnapshotKpisCommand::class, [
-    'interval'=> KpiInteval::Day
-])->hourly();
+    'interval' => KpiInterval::Day,
+])->daily();
 ```
 
-#### Manually
+#### Manual Snapshot
 
-You can snapshot your KPI manually using the `snapshot` method
+You can manually snapshot a KPI using the `snapshot` method:
 
 ```php
 use App\Kpis\Users\UsersCountKpi;
 
-UsersCountKpi::snapshot(now());
+UsersCountKpi::snapshot(
+    date: now()
+);
 ```
 
-### 3. Seeding your KPIs
+### 3. Seeding KPIs
 
-#### Seeding with the command
+#### Seeding with the Command
 
-When adding a KPI to an existing project, you might want to seed your KPIs in the past.
-
-To allow you to do that, the `KpiDefinition` class have one property `date`.
-This property represent the datetime of the snapshot. When possible, you should use it in the `getValue` method to compute your KPI.
-
-When your KPIs are configured with the `date`, you can run the following command:
+When adding KPIs to an existing project, you may want to seed past data. If your `KpiDefinition` class supports the `date` property, you can seed KPIs using the following command:
 
 ```bash
 php artisan kpis:seed "one year ago" "now"
 ```
 
-#### Seeding manually
+#### Manual Seeding
 
-you can seed your KPI manually using the `seed` method
+You can also seed KPIs manually using the `seed` method:
 
 ```php
 use App\Kpis\Users\UsersCountKpi;
@@ -254,17 +245,15 @@ UsersCountKpi::seed(
 );
 ```
 
-### 3. Querying your KPIs
+### 4. Querying KPIs
 
-Most of the time, you will want to query the KPIs to visualize them in a chart or a dashboard.
-
-To help you creating insightful charts quickly, the `KpiDefinition` class provides various methods:
+To visualize KPIs in charts or dashboards, the `KpiDefinition` class provides several helper methods:
 
 ```php
 use App\Kpis\Users\UsersCountKpi;
 
 /**
- * Will return a collection of Kpi with only one Kpi per interval keyed by the date
+ * Retrieve a collection of KPIs for a given period, keyed by date.
  */
 UsersCountKpi::getPeriod(
     start: now()->subDays(6),
@@ -273,24 +262,22 @@ UsersCountKpi::getPeriod(
 );
 
 /**
- * Will return a collection of KpiValue representing the "relative" Kpi (ei the difference between consequtive Kpi)
- * This is usefull for "absolute" Kpis such as the users count.
+ * Retrieve a collection of relative KPIs (i.e., the difference between consecutive snapshots).
  */
 UsersCountKpi::getDiffPeriod(
     start: now()->subDays(6),
     end: now(),
     interval: KpiInterval::Day
 );
-
-
 ```
 
-### 4. Aggregating your KPIs
+### 5. Aggregating KPIs
+
+You can easily aggregate KPIs using the following methods:
 
 ```php
 /**
- * The will return the Kpi where the value is the max for each month
- * This is usefull for "relative" Kpis where you could want to see the local maximum
+ * Retrieve the KPI with the maximum value for each month.
  */
 UsersCountKpi::max(
     start: now()->subMonths(6),
@@ -298,32 +285,15 @@ UsersCountKpi::max(
     interval: KpiInterval::Month
 );
 
-UsersCountKpi::min(
-    start: now()->subMonths(6),
-    end: now(),
-    interval: KpiInterval::Month
-);
-
-UsersCountKpi::avg(
-    start: now()->subMonths(6),
-    end: now(),
-    interval: KpiInterval::Month
-);
-
-UsersCountKpi::sum(
-    start: now()->subMonths(6),
-    end: now(),
-    interval: KpiInterval::Month
-);
-
-UsersCountKpi::count(
-    start: now()->subMonths(6),
-    end: now(),
-    interval: KpiInterval::Month
-);
+UsersCountKpi::min(...);
+UsersCountKpi::avg(...);
+UsersCountKpi::sum(...);
+UsersCountKpi::count(...);
 ```
 
 ## Testing
+
+Run the tests with:
 
 ```bash
 composer test
@@ -331,19 +301,19 @@ composer test
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+For recent changes, see the [CHANGELOG](CHANGELOG.md).
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+For contribution guidelines, see [CONTRIBUTING](CONTRIBUTING.md).
 
 ## Security Vulnerabilities
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+For details on reporting security vulnerabilities, review [our security policy](../../security/policy).
 
 ## Credits
 
--   [Quentin Gabriele](https://github.com/40128136+QuentinGab)
+-   [Quentin Gabriele](https://github.com/QuentinGab)
 -   [All Contributors](../../contributors)
 
 ## License

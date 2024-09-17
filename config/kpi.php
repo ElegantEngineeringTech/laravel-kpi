@@ -7,15 +7,16 @@ return [
     | Discover Definitions
     |--------------------------------------------------------------------------
     |
-    | If enabled is set to true, your KPI definitions will be automatically discovered when taking snapshot.
-    | Customize the path to indicate the directory where your definitions are located in your app.
-    | The KPI definitions will be discovered from the path and its subdirectories
+    | If 'enabled' is set to true, your KPI definitions will be automatically
+    | discovered when taking snapshots.
+    | Set the 'path' to specify the directory where your KPI definitions are stored.
+    | Definitions will be discovered from this path and its subdirectories.
     |
     */
     'discover' => [
         'enabled' => true,
         /**
-         * This path will be used with `app_path` helper like `app_path('Kpis')`
+         * This path will be used with the `app_path` helper, like `app_path('Kpis')`.
          */
         'path' => 'Kpis',
     ],
@@ -25,8 +26,8 @@ return [
     | Registered Definitions
     |--------------------------------------------------------------------------
     |
-    | You can manually register your kpi definitions if you are not using "auto-discover"
-    | or if you want to add more deifnitions not stored in the main path
+    | You can manually register your KPI definitions if you are not using
+    | "discover" or if you want to add additional definitions located elsewhere.
     |
     */
     'definitions' => [],
