@@ -8,19 +8,19 @@ use Elegantly\Kpi\Tests\TestKpiDefinition;
 
 it('can seed kpis between the right dates', function (KpiInterval $interval) {
 
-    $from = $interval->toStartOf()->sub($interval->value, 0);
-    $to = $interval->toEndOf();
+    $start = $interval->toStartOf()->sub($interval->value, 0);
+    $end = $interval->toEndOf();
 
     $seeded = TestKpiDefinition::seed(
-        start: $from,
-        end: $to,
+        start: $start,
+        end: $end,
         interval: "1 {$interval->toSmallerUnit()}"
     );
 
     expect(
         $seeded->count()
     )->toBe(
-        (int) round($from->diffInUnit($interval->toSmallerUnit(), $to))
+        (int) round($start->diffInUnit($interval->toSmallerUnit(), $end))
     );
 })->with([
     [KpiInterval::Minute],
@@ -193,23 +193,23 @@ it('can query the count of all kpis per interval', function (KpiInterval $interv
 it('can query and map to a period all kpis per interval', function (KpiInterval $interval) {
 
     $units = 1;
-    $from = $interval->toStartOf()->sub($interval->toUnit(), $units);
-    $to = $interval->toEndOf();
+    $start = $interval->toStartOf()->sub($interval->toUnit(), $units);
+    $end = $interval->toEndOf();
 
     $seeded = TestKpiDefinition::seed(
-        start: $from,
-        end: $to,
+        start: $start,
+        end: $end,
         interval: "1 {$interval->toSmallerUnit()}"
     );
 
     $period = CarbonPeriod::between(
-        start: $from,
-        end: $to,
+        start: $start,
+        end: $end,
     )->interval($interval->toCarbonInterval());
 
     $kpis = TestKpiDefinition::getPeriod(
-        start: $from,
-        end: $to,
+        start: $start,
+        end: $end,
         interval: $interval
     );
 
@@ -225,23 +225,23 @@ it('can query and map to a period all kpis per interval', function (KpiInterval 
 it('can query and map to a period all kpis differences per interval', function (KpiInterval $interval) {
 
     $units = 1;
-    $from = $interval->toStartOf()->sub($interval->toUnit(), $units);
-    $to = $interval->toEndOf();
+    $start = $interval->toStartOf()->sub($interval->toUnit(), $units);
+    $end = $interval->toEndOf();
 
     $seeded = TestKpiDefinition::seed(
-        start: $from,
-        end: $to,
+        start: $start,
+        end: $end,
         interval: "1 {$interval->toSmallerUnit()}"
     );
 
     $period = CarbonPeriod::between(
-        start: $from,
-        end: $to,
+        start: $start,
+        end: $end,
     )->interval($interval->toCarbonInterval());
 
     $kpis = TestKpiDefinition::getDiffPeriod(
-        start: $from,
-        end: $to,
+        start: $start,
+        end: $end,
         interval: $interval
     );
 
