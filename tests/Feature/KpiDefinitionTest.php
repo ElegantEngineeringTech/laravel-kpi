@@ -12,8 +12,8 @@ it('can seed kpis between the right dates', function (KpiInterval $interval) {
     $to = $interval->toEndOf();
 
     $seeded = TestKpiDefinition::seed(
-        from: $from,
-        to: $to,
+        start: $from,
+        end: $to,
         interval: "1 {$interval->toSmallerUnit()}"
     );
 
@@ -33,8 +33,8 @@ it('can seed kpis between the right dates', function (KpiInterval $interval) {
 it('can query the sum of all kpis per interval', function (KpiInterval $interval) {
 
     $seeded = TestKpiDefinition::seed(
-        from: $interval->toStartOf()->sub($interval->value, 9),
-        to: $interval->toEndOf(),
+        start: $interval->toStartOf()->sub($interval->value, 9),
+        end: $interval->toEndOf(),
         interval: "1 {$interval->toSmallerUnit()}"
     );
 
@@ -65,8 +65,8 @@ it('can query the sum of all kpis per interval', function (KpiInterval $interval
 it('can query the avg of all kpis per interval', function (KpiInterval $interval) {
 
     $seeded = TestKpiDefinition::seed(
-        from: $interval->toStartOf()->sub($interval->value, 9),
-        to: $interval->toEndOf(),
+        start: $interval->toStartOf()->sub($interval->value, 9),
+        end: $interval->toEndOf(),
         interval: "1 {$interval->toSmallerUnit()}"
     );
 
@@ -97,8 +97,8 @@ it('can query the avg of all kpis per interval', function (KpiInterval $interval
 it('can query the max of all kpis per interval', function (KpiInterval $interval) {
 
     $seeded = TestKpiDefinition::seed(
-        from: $interval->toStartOf()->sub($interval->value, 9),
-        to: $interval->toEndOf(),
+        start: $interval->toStartOf()->sub($interval->value, 9),
+        end: $interval->toEndOf(),
         interval: "1 {$interval->toSmallerUnit()}"
     );
 
@@ -129,8 +129,8 @@ it('can query the max of all kpis per interval', function (KpiInterval $interval
 it('can query the min of all kpis per interval', function (KpiInterval $interval) {
 
     $seeded = TestKpiDefinition::seed(
-        from: $interval->toStartOf()->sub($interval->value, 9),
-        to: $interval->toEndOf(),
+        start: $interval->toStartOf()->sub($interval->value, 9),
+        end: $interval->toEndOf(),
         interval: "1 {$interval->toSmallerUnit()}"
     );
 
@@ -161,8 +161,8 @@ it('can query the min of all kpis per interval', function (KpiInterval $interval
 it('can query the count of all kpis per interval', function (KpiInterval $interval) {
 
     $seeded = TestKpiDefinition::seed(
-        from: $interval->toStartOf()->sub($interval->value, 9),
-        to: $interval->toEndOf(),
+        start: $interval->toStartOf()->sub($interval->value, 9),
+        end: $interval->toEndOf(),
         interval: "1 {$interval->toSmallerUnit()}"
     );
 
@@ -197,8 +197,8 @@ it('can query and map to a period all kpis per interval', function (KpiInterval 
     $to = $interval->toEndOf();
 
     $seeded = TestKpiDefinition::seed(
-        from: $from,
-        to: $to,
+        start: $from,
+        end: $to,
         interval: "1 {$interval->toSmallerUnit()}"
     );
 
@@ -229,8 +229,8 @@ it('can query and map to a period all kpis differences per interval', function (
     $to = $interval->toEndOf();
 
     $seeded = TestKpiDefinition::seed(
-        from: $from,
-        to: $to,
+        start: $from,
+        end: $to,
         interval: "1 {$interval->toSmallerUnit()}"
     );
 

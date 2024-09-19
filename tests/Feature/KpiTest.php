@@ -60,8 +60,8 @@ it('sets the right value column', function (mixed $value, array $expected) {
 it('can query 1 kpi per interval', function (KpiInterval $interval) {
 
     $seeded = TestKpiDefinition::seed(
-        from: $interval->toStartOf()->sub($interval->value, 9),
-        to: $interval->toEndOf(),
+        start: $interval->toStartOf()->sub($interval->value, 9),
+        end: $interval->toEndOf(),
         interval: "1 {$interval->toSmallerUnit()}"
     );
 

@@ -112,8 +112,8 @@ abstract class KpiDefinition
      * @return Collection<int, Kpi<TValue>>
      */
     public static function seed(
-        CarbonInterface $from,
-        CarbonInterface $to,
+        CarbonInterface $start,
+        CarbonInterface $end,
         KpiInterval|string $interval,
     ): Collection {
 
@@ -121,8 +121,8 @@ abstract class KpiDefinition
          * @var CarbonPeriod $period
          */
         $period = CarbonPeriod::between(
-            start: $from->clone(),
-            end: $to->clone(),
+            start: $start->clone(),
+            end: $end->clone(),
         )->interval(
             $interval instanceof KpiInterval ? $interval->toCarbonInterval() : $interval
         );

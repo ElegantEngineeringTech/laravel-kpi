@@ -11,12 +11,12 @@ it('can seed kpis between the right dates using the command', function () {
     ]);
 
     $hours = 23 * 2;
-    $from = now()->subHours($hours);
-    $to = now();
+    $start = now()->subHours($hours);
+    $end = now();
 
     Artisan::call(KpisSeedCommand::class, [
-        'from' => $from,
-        'to' => $to,
+        'start' => $start,
+        'end' => $end,
     ]);
 
     expect(

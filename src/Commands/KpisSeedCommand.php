@@ -11,34 +11,34 @@ class KpisSeedCommand extends Command
 {
     use DiscoverKpiDefinitions;
 
-    public $signature = 'kpis:seed {from} {to} {--only=*}';
+    public $signature = 'kpis:seed {start} {end} {--only=*}';
 
     public $description = 'Seed your KPI between two date';
 
-    public function getFromDate(): Carbon
+    public function getStartDate(): Carbon
     {
         /**
-         * @var string $from
+         * @var string $start
          */
-        $from = $this->argument('from');
+        $start = $this->argument('start');
 
-        return Carbon::parse($from);
+        return Carbon::parse($start);
     }
 
-    public function getToDate(): Carbon
+    public function getEndDate(): Carbon
     {
         /**
-         * @var string $to
+         * @var string $end
          */
-        $to = $this->argument('to');
+        $end = $this->argument('end');
 
-        return Carbon::parse($to);
+        return Carbon::parse($end);
     }
 
     public function handle(): int
     {
-        $from = $this->getFromDate();
-        $to = $this->getToDate();
+        $start = $this->getStartDate();
+        $end = $this->getEndDate();
 
         /**
          * @var null|string[] $only
@@ -64,8 +64,8 @@ class KpisSeedCommand extends Command
             $interval = $className::getSnapshotInterval();
 
             $className::seed(
-                from: $interval->toStartOf($from->clone()),
-                to: $interval->toEndOf($to->clone()),
+                start: $interval->toStartOf($start->clone()),
+                end: $interval->toEndOf($end->clone()),
                 interval: $interval,
             );
 
