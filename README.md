@@ -5,6 +5,8 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/elegantengineeringtech/laravel-kpi/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/elegantengineeringtech/laravel-kpi/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/elegantly/laravel-kpi.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-kpi)
 
+![laravel-seo](https://repository-images.githubusercontent.com/836316961/3690c066-4681-48c9-8a37-be709899bd94)
+
 This package provides an easy way to store KPIs from your application in your database and retrieve them in various formats. It's especially useful for tracking data related to your models, such as:
 
 -   Number of users
