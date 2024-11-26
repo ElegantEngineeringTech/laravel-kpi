@@ -40,7 +40,7 @@ it('sets the right value column', function (mixed $value, array $expected) {
             'number_value' => null,
             'json_value' => null,
             'string_value' => null,
-            'money_value' => 10000,
+            'money_value' => 100.00,
             'money_currency' => 'EUR',
         ],
     ],

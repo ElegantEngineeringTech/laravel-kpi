@@ -125,6 +125,7 @@ class Kpi extends Model
         $this->json_value = null;
         $this->string_value = null;
         $this->money_value = null;
+        $this->money_currency = null;
 
         return $this;
     }
