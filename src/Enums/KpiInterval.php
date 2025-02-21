@@ -61,7 +61,7 @@ enum KpiInterval: string
     public function toSqlFormat(string $driver, string $column): string
     {
         return match ($driver) {
-            MySqlGrammar::class, 'mysql', MariaDbGrammar::class, 'mariadb', => MySqlAdapter::datetime($this, $column),
+            MySqlGrammar::class, 'mysql', MariaDbGrammar::class, 'mariadb' => MySqlAdapter::datetime($this, $column),
             SQLiteGrammar::class, 'sqlite' => SqliteAdapter::datetime($this, $column),
             PostgresGrammar::class, 'pgsql' => PostgreSqlAdapter::datetime($this, $column),
             default => throw new Error('Unsupported database driver.'),
