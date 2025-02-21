@@ -10,6 +10,7 @@ use Elegantly\Kpi\SqlAdapters\MySqlAdapter;
 use Elegantly\Kpi\SqlAdapters\PostgreSqlAdapter;
 use Elegantly\Kpi\SqlAdapters\SqliteAdapter;
 use Error;
+use Illuminate\Database\Query\Grammars\MariaDbGrammar;
 use Illuminate\Database\Query\Grammars\MySqlGrammar;
 use Illuminate\Database\Query\Grammars\PostgresGrammar;
 use Illuminate\Database\Query\Grammars\SQLiteGrammar;
@@ -60,7 +61,7 @@ enum KpiInterval: string
     public function toSqlFormat(string $driver, string $column): string
     {
         return match ($driver) {
-            MySqlGrammar::class, 'mysql', 'mariadb' => MySqlAdapter::datetime($this, $column),
+            MySqlGrammar::class, 'mysql', MariaDbGrammar::class, 'mariadb', => MySqlAdapter::datetime($this, $column),
             SQLiteGrammar::class, 'sqlite' => SqliteAdapter::datetime($this, $column),
             PostgresGrammar::class, 'pgsql' => PostgreSqlAdapter::datetime($this, $column),
             default => throw new Error('Unsupported database driver.'),
