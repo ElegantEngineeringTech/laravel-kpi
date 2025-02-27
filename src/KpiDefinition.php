@@ -5,12 +5,14 @@ namespace Elegantly\Kpi;
 use Brick\Money\Money;
 use Carbon\CarbonInterface;
 use Carbon\CarbonPeriod;
+use Elegantly\Kpi\Contracts\KpiModelInterface;
 use Elegantly\Kpi\Enums\KpiAggregate;
 use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Kpi\Models\Kpi;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
+use function app;
 
 /**
  * @template TValue of null|float|string|Money|array<array-key, mixed>
@@ -92,7 +94,7 @@ abstract class KpiDefinition
         /**
          * @var Kpi<TValue> $kpi
          */
-        $kpi = new Kpi;
+        $kpi = app(KpiModelInterface::class);
 
         $date ??= now();
 
