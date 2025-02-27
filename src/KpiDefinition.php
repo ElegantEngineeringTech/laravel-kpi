@@ -156,8 +156,7 @@ abstract class KpiDefinition
          * @var Builder<Kpi<TValue>>
          */
 
-
-        $query = app('KpiModelInterface')::query()->where('name', static::getName());
+        $query = app(KpiModelInterface::class)::query()->where('name', static::getName());
 
         if ($start) {
             $query->where('date', '>=', $start);
