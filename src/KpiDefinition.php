@@ -311,10 +311,12 @@ abstract class KpiDefinition
                 ->selectRaw('MAX(id) AS max_id')
                 ->groupByRaw($interval->toSqlFormat($grammar::class, 'date'));
 
+            $schema = app(KpiModelInterface::class)->getTable();
+
             $query->toBase()->joinSub(
                 query: $subquery,
                 as: 'subquery',
-                first: 'kpis.id',
+                first: "{$schema}.id",
                 operator: '=',
                 second: 'subquery.max_id'
             );
