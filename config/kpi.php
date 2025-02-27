@@ -41,5 +41,5 @@ return [
     | (must implement Elegantly\Kpi\Contracts\KpiModelInterface)
     |
     */
-    'model' => null,
+    'model' => \Elegantly\Kpi\Models\Kpi::class,
 ];

@@ -28,7 +28,7 @@ class KpiServiceProvider extends PackageServiceProvider
 
     public function register()
     {
-        $customModelClass = config('kpi.model', Kpi::class);
+        $customModelClass = config('kpi.model');
         if ($customModelClass) {
             $this->app->bind(KpiModelInterface::class, function ($app) use ($customModelClass) {
                 return $app->make($customModelClass);
