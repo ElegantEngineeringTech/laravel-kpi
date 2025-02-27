@@ -4,6 +4,7 @@ namespace Elegantly\Kpi;
 
 use Elegantly\Kpi\Commands\KpisSeedCommand;
 use Elegantly\Kpi\Commands\KpisSnapshotCommand;
+use Elegantly\Kpi\Contracts\KpiModelInterface;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -22,5 +23,17 @@ class KpiServiceProvider extends PackageServiceProvider
             ->hasMigration('create_kpis_table')
             ->hasCommand(KpisSnapshotCommand::class)
             ->hasCommand(KpisSeedCommand::class);
+    }
+
+    public function register()
+    {
+        $customModelClass = config('kpi.model');
+        if ($customModelClass) {
+            $this->app->bind(KpiModelInterface::class, function ($app) use ($customModelClass) {
+                return $app->make($customModelClass);
+            });
+        }
+
+        parent::register();
     }
 }
