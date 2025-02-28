@@ -41,6 +41,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('kpis');
+        $connection = app(KpiModelInterface::class)->getConnectionName();
+        $schema = app(KpiModelInterface::class)->getTable();
+
+        Schema::connection($connection)->dropIfExists($schema);
     }
 };
