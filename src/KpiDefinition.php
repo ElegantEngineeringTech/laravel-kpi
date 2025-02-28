@@ -94,7 +94,7 @@ abstract class KpiDefinition
         /**
          * @var Kpi<TValue> $kpi
          */
-        $kpi = new Kpi;
+        $kpi = KpiServiceProvider::makeModelInstance();
 
         $date ??= now();
 
@@ -155,7 +155,7 @@ abstract class KpiDefinition
         /**
          * @var Builder<Kpi<TValue>>
          */
-        $query = Kpi::query()->where('name', static::getName());
+        $query = KpiServiceProvider::getModelClass()::query()->where('name', static::getName());
 
         if ($start) {
             $query->where('date', '>=', $start);
@@ -310,10 +310,12 @@ abstract class KpiDefinition
                 ->selectRaw('MAX(id) AS max_id')
                 ->groupByRaw($interval->toSqlFormat($grammar::class, 'date'));
 
+            $table = KpiServiceProvider::makeModelInstance()->getTable();
+
             $query->toBase()->joinSub(
                 query: $subquery,
                 as: 'subquery',
-                first: 'kpis.id',
+                first: "{$table}.id",
                 operator: '=',
                 second: 'subquery.max_id'
             );

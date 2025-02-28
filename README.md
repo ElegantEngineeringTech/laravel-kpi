@@ -297,6 +297,71 @@ UsersCountKpi::sum(...);
 UsersCountKpi::count(...);
 ```
 
+### Storing Kpis in a separate database
+
+To reduce the write load this package creates on your primary database, you can store your KPIs in a different database.
+
+Follow these steps to set it up:
+
+#### 1. Create your own Kpi class
+
+In your application, create a custom model by extending the default one.
+
+Ensure you define the connection property. You may also define the table property if necessary.
+
+```php
+namespace \App\Models;
+
+class Kpi extends \Eleganlty\Kpi\Models\Kpi
+{
+    /**
+     * The database connection that should be used by the model.
+     *
+     * @var string
+     */
+    protected $connection = 'mysql';
+
+}
+```
+
+#### 2. Publish and edit the config
+
+In your `kpi` configuration file, specify your custom class as the KPI model:
+
+```php
+return [
+    //...
+
+    'model' => \App\Models\Kpi::class
+
+    //...
+]
+```
+
+#### 3. Publish and edit the migration
+
+Ensure you specify the correct connection and table in the migration file.
+
+It should look like this:
+
+```php
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::connection('mysql')->create('kpis', function (Blueprint $table){
+            // ...
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::connection('mysql')->dropIfExists('kpis');
+    }
+
+}
+```
+
 ## Testing
 
 Run the tests with:

@@ -75,13 +75,13 @@ it('can query the avg of all kpis per interval', function (KpiInterval $interval
     $kpis = TestKpiDefinition::query()
         ->get()
         ->groupBy(fn (Kpi $kpi) => $kpi->date->format($interval->toDateFormat()))
-        ->map(fn ($kpis) => round($kpis->average(fn (Kpi $kpi) => $kpi->number_value), 2));
+        ->map(fn ($kpis) => round($kpis->average(fn (Kpi $kpi) => $kpi->number_value), 4));
 
     $avg = TestKpiDefinition::avg(
         interval: $interval
     )
         ->keyBy(fn (KpiValue $value) => $value->date->format($interval->toDateFormat()))
-        ->map(fn (KpiValue $value) => (float) round($value->value, 2));
+        ->map(fn (KpiValue $value) => round($value->value, 4));
 
     expect(
         $kpis->toArray()

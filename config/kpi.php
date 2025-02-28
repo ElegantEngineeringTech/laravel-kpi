@@ -33,4 +33,14 @@ return [
     |
     */
     'definitions' => [],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Model
+    |--------------------------------------------------------------------------
+    |
+    | Here you can define a custom class to use for your Kpi model
+    |
+    */
+    'model' => \Elegantly\Kpi\Models\Kpi::class,
 ];
