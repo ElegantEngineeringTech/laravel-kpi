@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Brick\Money\Money;
 use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Kpi\Models\Kpi;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Brick\Money\Money;
 use Elegantly\Kpi\KpiMoneyDefinition;
 use Elegantly\Kpi\Models\Kpi;

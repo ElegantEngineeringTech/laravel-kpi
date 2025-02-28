@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Elegantly\Kpi\Tests;
 
 use Elegantly\Kpi\KpiServiceProvider;

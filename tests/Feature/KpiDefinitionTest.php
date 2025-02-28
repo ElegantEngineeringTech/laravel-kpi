@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Carbon\CarbonPeriod;
 use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Kpi\KpiValue;

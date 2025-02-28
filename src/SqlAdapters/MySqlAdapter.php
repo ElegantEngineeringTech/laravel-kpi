@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Elegantly\Kpi\SqlAdapters;
 
 use Elegantly\Kpi\Enums\KpiInterval;

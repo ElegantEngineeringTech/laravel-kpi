@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Elegantly\Kpi\Commands\KpisSeedCommand;
 use Elegantly\Kpi\Tests\TestKpiDefinition;
 use Illuminate\Support\Facades\Artisan;

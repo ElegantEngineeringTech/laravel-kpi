@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Elegantly\Kpi\Database\Factories;
 
 use Elegantly\Kpi\Models\Kpi;
