@@ -1,6 +1,5 @@
 <?php
 
-use Elegantly\Kpi\Contracts\KpiModelInterface;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -9,10 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        $connection = app(KpiModelInterface::class)->getConnectionName();
-        $schema = app(KpiModelInterface::class)->getTable();
-
-        Schema::connection($connection)->create($schema, function (Blueprint $table) {
+        Schema::create('kpis', function (Blueprint $table){
             $table->id();
 
             $table->string('name');
@@ -41,9 +37,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        $connection = app(KpiModelInterface::class)->getConnectionName();
-        $schema = app(KpiModelInterface::class)->getTable();
-
-        Schema::connection($connection)->dropIfExists($schema);
+        Schema::dropIfExists('kpis');
     }
 };

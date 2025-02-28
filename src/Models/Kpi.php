@@ -4,7 +4,6 @@ namespace Elegantly\Kpi\Models;
 
 use Brick\Money\Money;
 use Carbon\CarbonInterface;
-use Elegantly\Kpi\Contracts\KpiModelInterface;
 use Elegantly\Kpi\Database\Factories\KpiFactory;
 use Elegantly\Money\MoneyCast;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -30,7 +29,7 @@ use Illuminate\Support\Arr;
  * @property CarbonInterface $created_at
  * @property CarbonInterface $updated_at
  */
-class Kpi extends Model implements KpiModelInterface
+class Kpi extends Model
 {
     /**
      * @use HasFactory<KpiFactory>

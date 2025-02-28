@@ -38,7 +38,6 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you can define a custom class to use for your Kpi model
-    | (must implement Elegantly\Kpi\Contracts\KpiModelInterface)
     |
     */
     'model' => \Elegantly\Kpi\Models\Kpi::class,

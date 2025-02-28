@@ -5,14 +5,12 @@ namespace Elegantly\Kpi;
 use Brick\Money\Money;
 use Carbon\CarbonInterface;
 use Carbon\CarbonPeriod;
-use Elegantly\Kpi\Contracts\KpiModelInterface;
 use Elegantly\Kpi\Enums\KpiAggregate;
 use Elegantly\Kpi\Enums\KpiInterval;
 use Elegantly\Kpi\Models\Kpi;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
-use function app;
 
 /**
  * @template TValue of null|float|string|Money|array<array-key, mixed>
@@ -94,7 +92,7 @@ abstract class KpiDefinition
         /**
          * @var Kpi<TValue> $kpi
          */
-        $kpi = app(KpiModelInterface::class);
+        $kpi = KpiServiceProvider::makeModelInstance();
 
         $date ??= now();
 
@@ -155,8 +153,7 @@ abstract class KpiDefinition
         /**
          * @var Builder<Kpi<TValue>>
          */
-
-        $query = app(KpiModelInterface::class)::query()->where('name', static::getName());
+        $query = KpiServiceProvider::getModelClass()::query()->where('name', static::getName());
 
         if ($start) {
             $query->where('date', '>=', $start);
@@ -311,7 +308,7 @@ abstract class KpiDefinition
                 ->selectRaw('MAX(id) AS max_id')
                 ->groupByRaw($interval->toSqlFormat($grammar::class, 'date'));
 
-            $schema = app(KpiModelInterface::class)->getTable();
+            $schema = KpiServiceProvider::makeModelInstance()->getTable();
 
             $query->toBase()->joinSub(
                 query: $subquery,
