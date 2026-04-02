@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use Elegantly\Kpi\Models\Kpi;
 
 return [
 
@@ -42,5 +43,5 @@ return [
     | Here you can define a custom class to use for your Kpi model
     |
     */
-    'model' => \Elegantly\Kpi\Models\Kpi::class,
+    'model' => Kpi::class,
 ];

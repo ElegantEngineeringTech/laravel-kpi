@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Elegantly\Kpi\Facades;
 
+use Elegantly\Kpi\Kpi;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Elegantly\Kpi\Kpi
+ * @see Kpi
  */
 // class Kpi extends Facade
 // {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Elegantly\Kpi\Enums;
 
+use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
 
 enum KpiAggregate: string
@@ -14,7 +15,7 @@ enum KpiAggregate: string
     case Average = 'average';
     case Count = 'count';
 
-    public function toSqlSelect(string $column, string $alias = 'aggregated_value'): \Illuminate\Contracts\Database\Query\Expression
+    public function toSqlSelect(string $column, string $alias = 'aggregated_value'): Expression
     {
         return match ($this) {
             self::Max => DB::raw("MAX({$column}) as {$alias}"),
