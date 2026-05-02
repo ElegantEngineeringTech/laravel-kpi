@@ -5,6 +5,8 @@
 [![Laravel Pint](https://img.shields.io/github/actions/workflow/status/ElegantEngineeringTech/laravel-kpi/pint.yml?label=laravel%20pint&style=flat-square)](https://github.com/ElegantEngineeringTech/laravel-kpi/actions?query=workflow%3Apint)
 [![Total Downloads](https://img.shields.io/packagist/dt/elegantly/laravel-kpi.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-kpi)
 
+![laravel-kpi](https://repository-images.githubusercontent.com/836316961/3690c066-4681-48c9-8a37-be709899bd94)
+
 This package provides an easy way to store KPIs from your application in your database and retrieve them in various formats. It's especially useful for tracking data related to your models, such as:
 
 -   Number of users
