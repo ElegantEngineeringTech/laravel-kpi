@@ -21,7 +21,10 @@ class KpisSnapshotCommand extends Command
     {
         $interval = $this->option('interval');
 
-        $date = $this->option('date') ? Carbon::parse($this->option('date')) : null;
+        /** @var string */
+        $_date = $this->option('date');
+
+        $date = $_date ? Carbon::parse($_date) : null;
 
         $definitions = $this->getDefinitions();
 
